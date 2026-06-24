@@ -1,9 +1,11 @@
-import anthropic
+import json
+
+import groq
 
 from app.core.config import settings
 from app.schemas.review import ReviewFindings
 
-MODEL_NAME = "claude-sonnet-4-6"
+MODEL_NAME = "llama-3.3-70b-versatile"
 MAX_DIFF_CHARS = 70_000
 
 SYSTEM_PROMPT = """You are an expert code reviewer. You will be given a unified git diff from a pull \
@@ -20,9 +22,12 @@ rather than inventing problems. Call the submit_findings tool exactly once with 
 
 _TOOLS = [
     {
-        "name": "submit_findings",
-        "description": "Submit the structured code review findings for the diff.",
-        "input_schema": ReviewFindings.model_json_schema(),
+        "type": "function",
+        "function": {
+            "name": "submit_findings",
+            "description": "Submit the structured code review findings for the diff.",
+            "parameters": ReviewFindings.model_json_schema(),
+        },
     }
 ]
 
@@ -46,36 +51,39 @@ def _truncate_diff(diff_text: str) -> str:
 
 
 def review_diff(diff_text: str) -> tuple[ReviewFindings, str]:
-    """Run the diff through Claude and return (parsed findings, diff snapshot actually sent)."""
+    """Run the diff through Groq's LLM and return (parsed findings, diff snapshot actually sent)."""
     diff_snapshot = _truncate_diff(diff_text)
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    client = groq.Groq(api_key=settings.groq_api_key)
 
     request_kwargs = dict(
         model=MODEL_NAME,
         max_tokens=4096,
-        system=SYSTEM_PROMPT,
         tools=_TOOLS,
-        tool_choice={"type": "tool", "name": "submit_findings"},
-        messages=[{"role": "user", "content": f"Review this diff:\n\n{diff_snapshot}"}],
+        tool_choice={"type": "function", "function": {"name": "submit_findings"}},
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"Review this diff:\n\n{diff_snapshot}"},
+        ],
     )
 
     try:
-        response = client.messages.create(**request_kwargs)
-    except (anthropic.RateLimitError, anthropic.APIConnectionError):
+        response = client.chat.completions.create(**request_kwargs)
+    except (groq.RateLimitError, groq.APIConnectionError):
         try:
-            response = client.messages.create(**request_kwargs)
-        except anthropic.APIError as exc:
-            raise LLMReviewError(f"Claude API call failed after retry: {exc}") from exc
-    except anthropic.APIError as exc:
-        raise LLMReviewError(f"Claude API call failed: {exc}") from exc
+            response = client.chat.completions.create(**request_kwargs)
+        except groq.APIError as exc:
+            raise LLMReviewError(f"Groq API call failed after retry: {exc}") from exc
+    except groq.APIError as exc:
+        raise LLMReviewError(f"Groq API call failed: {exc}") from exc
 
-    tool_use_block = next((block for block in response.content if block.type == "tool_use"), None)
-    if tool_use_block is None:
-        raise LLMReviewError("Claude response did not include a tool_use block")
+    tool_calls = response.choices[0].message.tool_calls
+    if not tool_calls:
+        raise LLMReviewError("Groq response did not include a tool call")
 
     try:
-        findings = ReviewFindings.model_validate(tool_use_block.input)
+        arguments = json.loads(tool_calls[0].function.arguments)
+        findings = ReviewFindings.model_validate(arguments)
     except Exception as exc:
-        raise LLMReviewError(f"Claude response failed schema validation: {exc}") from exc
+        raise LLMReviewError(f"Groq response failed schema validation: {exc}") from exc
 
     return findings, diff_snapshot

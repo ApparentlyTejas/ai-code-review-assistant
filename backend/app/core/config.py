@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 60 * 24
 
     pat_encryption_key: str
-    anthropic_api_key: str
+    groq_api_key: str
 
     cors_origins: str = "http://localhost:5173"
 
