@@ -9,6 +9,7 @@ venv/
 .env
 .env.*
 !.env.example
+!frontend/.env.development
 
 # Node / frontend
 node_modules/
