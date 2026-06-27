@@ -1,11 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createProject, listProjects } from "../api/projects";
-import { useAuth } from "../auth/AuthContext";
 
 export function ProjectList() {
-  const { logout } = useAuth();
   const queryClient = useQueryClient();
   const { data: projects, isLoading } = useQuery({ queryKey: ["projects"], queryFn: listProjects });
 
@@ -29,10 +28,9 @@ export function ProjectList() {
   }
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <header className="page-header">
         <h1>Projects</h1>
-        <button onClick={logout}>Log out</button>
       </header>
 
       <form onSubmit={handleSubmit} className="connect-repo-form">
@@ -72,6 +70,6 @@ export function ProjectList() {
           </li>
         ))}
       </ul>
-    </div>
+    </motion.div>
   );
 }
