@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { listPullRequests, triggerReview } from "../api/projects";
 
@@ -18,7 +19,7 @@ export function ProjectDetail() {
   });
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <header className="page-header">
         <h1>Open pull requests</h1>
         <Link to={`/projects/${id}/reviews`}>View review history</Link>
@@ -48,6 +49,6 @@ export function ProjectDetail() {
       <p>
         <Link to="/projects">Back to projects</Link>
       </p>
-    </div>
+    </motion.div>
   );
 }
