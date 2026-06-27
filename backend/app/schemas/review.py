@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.finding import FindingCategory, FindingSeverity
 from app.models.review import ReviewStatus
@@ -19,8 +19,7 @@ class FindingOut(BaseModel):
     message: str
     suggested_fix: str | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewOut(BaseModel):
@@ -35,8 +34,7 @@ class ReviewOut(BaseModel):
     created_at: datetime
     findings: list[FindingOut] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewSummaryOut(BaseModel):
@@ -47,12 +45,11 @@ class ReviewSummaryOut(BaseModel):
     created_at: datetime
     finding_count: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Finding(BaseModel):
-    """Schema for a single LLM-produced finding, used as the Claude tool-use response shape."""
+    """Schema for a single LLM-produced finding, used as the Groq tool-call response shape."""
 
     category: FindingCategory
     severity: FindingSeverity
@@ -63,6 +60,6 @@ class Finding(BaseModel):
 
 
 class ReviewFindings(BaseModel):
-    """Top-level schema the LLM must populate via tool-use for a code review."""
+    """Top-level schema the LLM must populate via tool-call for a code review."""
 
     findings: list[Finding]
