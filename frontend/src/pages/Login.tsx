@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
@@ -25,7 +26,15 @@ export function Login() {
   }
 
   return (
-    <div className="auth-page">
+    <motion.div
+      className="auth-page"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Link to="/" style={{ display: "block", marginBottom: 28, fontWeight: 600, color: "var(--text)" }}>
+        AI Code Review
+      </Link>
       <h1>Log in</h1>
       <form onSubmit={handleSubmit}>
         <label>
@@ -44,6 +53,6 @@ export function Login() {
       <p>
         No account? <Link to="/register">Register</Link>
       </p>
-    </div>
+    </motion.div>
   );
 }
