@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { Navbar } from "../components/Navbar";
 import { useAuth } from "./AuthContext";
 
 export function ProtectedRoute() {
@@ -12,5 +13,12 @@ export function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Navbar />
+      <div className="app-container">
+        <Outlet />
+      </div>
+    </>
+  );
 }
