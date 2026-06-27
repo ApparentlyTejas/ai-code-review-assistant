@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { getReview } from "../api/projects";
 import type { Finding } from "../types";
@@ -23,7 +24,7 @@ export function ReviewDetail() {
   );
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <header className="page-header">
         <h1>
           PR #{review.pr_number}: {review.pr_title}
@@ -42,8 +43,14 @@ export function ReviewDetail() {
       {review.status === "completed" && sortedFindings.length === 0 && <p>No issues found. Clean diff!</p>}
 
       <ul className="finding-list">
-        {sortedFindings.map((finding) => (
-          <li key={finding.id} className={`finding finding-${finding.severity}`}>
+        {sortedFindings.map((finding, index) => (
+          <motion.li
+            key={finding.id}
+            className={`finding finding-${finding.severity}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.06 }}
+          >
             <div className="finding-header">
               <span className="badge badge-category">{finding.category}</span>
               <span className="badge badge-severity">{finding.severity}</span>
@@ -59,13 +66,13 @@ export function ReviewDetail() {
                 <pre>{finding.suggested_fix}</pre>
               </details>
             )}
-          </li>
+          </motion.li>
         ))}
       </ul>
 
       <p>
         <Link to={`/projects/${id}`}>Back to pull requests</Link>
       </p>
-    </div>
+    </motion.div>
   );
 }
