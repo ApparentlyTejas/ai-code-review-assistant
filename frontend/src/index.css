@@ -487,9 +487,15 @@ pre {
 }
 
 .feature-card .feature-icon {
-  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--accent);
   margin-bottom: 18px;
-  display: block;
 }
 
 .feature-card h3 {

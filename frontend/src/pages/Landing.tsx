@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ScrollReveal } from "../components/ScrollReveal";
+import { ConnectIcon, LockIcon, UserIcon } from "../components/Icons";
 import { useAuth } from "../auth/AuthContext";
 
 const TECH_STACK = ["Python", "FastAPI", "React", "PostgreSQL", "Groq", "Llama 3.3"];
@@ -12,6 +13,7 @@ export function Landing() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const glowY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
 
   return (
     <div className="landing">
@@ -35,14 +37,14 @@ export function Landing() {
 
       <div className="hero" ref={heroRef}>
         <motion.div className="hero-glow" style={{ y: glowY }} />
-        <motion.div style={{ opacity: heroOpacity }}>
+        <motion.div style={{ opacity: heroOpacity, scale: heroScale }}>
           <motion.p
             className="hero-eyebrow"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            AI-POWERED CODE REVIEW
+            AI POWERED CODE REVIEW
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
@@ -54,8 +56,8 @@ export function Landing() {
             Reviewed instantly.
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-            Connect a GitHub repo, pick an open PR, and get structured, severity-ranked findings on bugs, security
-            issues, and style — powered by a real LLM, not a linter.
+            Connect a GitHub repo, pick an open pull request, and get back structured findings on bugs, security
+            issues, and style, ranked by severity.
           </motion.p>
           <motion.div
             className="hero-actions"
@@ -86,31 +88,38 @@ export function Landing() {
       <section className="section">
         <ScrollReveal>
           <p className="section-eyebrow">CONNECT</p>
-          <h2>Your repos, securely connected.</h2>
+          <h2>Your repo, connected safely.</h2>
           <p className="lead">
-            Authenticate with a personal access token, and we'll validate access before anything's stored.
+            Add a GitHub personal access token. Real access is confirmed through the GitHub API before anything
+            is saved.
           </p>
         </ScrollReveal>
         <div className="feature-grid">
           <ScrollReveal delay={0}>
             <div className="feature-card">
-              <span className="feature-icon">🔗</span>
-              <h3>One-click repo connect</h3>
-              <p>Paste a GitHub personal access token and repo name — we validate real access via the GitHub API.</p>
+              <span className="feature-icon">
+                <ConnectIcon />
+              </span>
+              <h3>One-step connect</h3>
+              <p>Paste a personal access token and a repo name. Access is checked through the GitHub API first.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
             <div className="feature-card">
-              <span className="feature-icon">🔒</span>
+              <span className="feature-icon">
+                <LockIcon />
+              </span>
               <h3>Encrypted at rest</h3>
-              <p>Tokens are encrypted with Fernet before they ever touch the database, and never returned by the API.</p>
+              <p>Tokens are encrypted with Fernet before they're stored, and the API never sends them back.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
             <div className="feature-card">
-              <span className="feature-icon">👤</span>
+              <span className="feature-icon">
+                <UserIcon />
+              </span>
               <h3>Your own account</h3>
-              <p>Real email/password auth with JWT sessions — every project belongs to you, and only you.</p>
+              <p>Sign in with email and password. Every project you connect stays private to your account.</p>
             </div>
           </ScrollReveal>
         </div>
@@ -119,10 +128,10 @@ export function Landing() {
       <section className="section section-dark">
         <ScrollReveal>
           <p className="section-eyebrow">REVIEW</p>
-          <h2>Findings that read like a senior engineer wrote them.</h2>
+          <h2>Findings that read like a real review.</h2>
           <p className="lead">
-            Each pull request diff is sent to an LLM with a structured tool schema, so every finding comes back
-            categorized, severity-ranked, and grounded in the actual diff — not guesswork.
+            Each diff is sent to an LLM with a structured schema, so findings come back categorized, ranked by
+            severity, and tied to a real line in the code.
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
@@ -145,8 +154,8 @@ export function Landing() {
       <section className="section">
         <ScrollReveal>
           <p className="section-eyebrow">STACK</p>
-          <h2>Built end-to-end, no shortcuts.</h2>
-          <p className="lead">A real full-stack app: relational schema, JWT auth, encrypted secrets, and a live LLM in the loop.</p>
+          <h2>The stack behind it.</h2>
+          <p className="lead">A relational schema, JWT auth, encrypted secrets, and a live LLM in the review loop.</p>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
@@ -169,7 +178,7 @@ export function Landing() {
       </section>
 
       <footer className="landing-footer">
-        AI Code Review Assistant — a portfolio project. Built with FastAPI, React, and Groq.
+        AI Code Review Assistant. A portfolio project built with FastAPI, React, and Groq.
       </footer>
     </div>
   );
