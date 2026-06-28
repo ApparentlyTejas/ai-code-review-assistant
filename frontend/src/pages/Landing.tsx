@@ -37,7 +37,7 @@ export function Landing() {
 
       <div className="hero" ref={heroRef}>
         <motion.div className="hero-glow" style={{ y: glowY }} />
-        <motion.div style={{ opacity: heroOpacity, scale: heroScale }}>
+        <motion.div className="hero-content" style={{ opacity: heroOpacity, scale: heroScale }}>
           <motion.p
             className="hero-eyebrow"
             initial={{ opacity: 0, y: 12 }}
@@ -135,18 +135,29 @@ export function Landing() {
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
-          <div className="mock-finding-card">
-            <div className="finding-header">
-              <span className="badge">security</span>
-              <span className="badge">critical</span>
-              <code>app/services/db.py:42</code>
+          <div className="mock-finding-wrapper">
+            <div className="mock-finding-glow" />
+            <div className="mock-finding-card">
+              <div className="mock-finding-chrome">
+                <span className="mock-finding-dot" style={{ background: "#ff5f57" }} />
+                <span className="mock-finding-dot" style={{ background: "#febc2e" }} />
+                <span className="mock-finding-dot" style={{ background: "#28c840" }} />
+                <span className="mock-finding-chrome-label">Review result</span>
+              </div>
+              <div className="mock-finding-body">
+                <div className="finding-header">
+                  <span className="badge">security</span>
+                  <span className="badge">critical</span>
+                  <code>app/services/db.py:42</code>
+                </div>
+                <p style={{ margin: 0 }}>
+                  User input is concatenated directly into a SQL query, exposing the endpoint to injection attacks.
+                </p>
+                <p className="mock-finding-fix">
+                  Suggested fix: use parameterized queries via the driver's placeholder syntax.
+                </p>
+              </div>
             </div>
-            <p style={{ margin: "0 0 8px", fontSize: 15 }}>
-              User input is concatenated directly into a SQL query, exposing the endpoint to injection attacks.
-            </p>
-            <p style={{ margin: 0, fontSize: 13, color: "var(--text-on-dark-secondary)" }}>
-              Suggested fix: use parameterized queries via the driver's placeholder syntax.
-            </p>
           </div>
         </ScrollReveal>
       </section>
