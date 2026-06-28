@@ -12,6 +12,7 @@ python-jose[cryptography]==3.3.0
 cryptography==44.0.0
 httpx==0.28.1
 groq==0.15.0
+slowapi==0.1.9
 python-multipart==0.0.20
 pytest==8.3.4
 pytest-asyncio==0.25.0

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.limiter import limiter
 from app.models.finding import Finding as FindingModel
 from app.models.project import Project
 from app.models.review import Review, ReviewStatus
@@ -23,7 +24,9 @@ def _get_owned_project(db: Session, project_id: int, user: User) -> Project:
 
 
 @router.post("", response_model=ReviewOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/hour")
 def trigger_review(
+    request: Request,
     project_id: int,
     payload: ReviewCreate,
     db: Session = Depends(get_db),
