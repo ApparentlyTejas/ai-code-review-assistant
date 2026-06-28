@@ -525,6 +525,10 @@ pre {
   color: var(--text-on-dark);
 }
 
+.section-dark h2 {
+  color: var(--text-on-dark);
+}
+
 .section-dark .section-eyebrow {
   color: var(--accent-dark-bg);
 }
