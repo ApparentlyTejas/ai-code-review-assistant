@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { createProject, listProjects } from "../api/projects";
+import { pageTransition } from "../components/pageTransition";
+import { Spinner } from "../components/Spinner";
 
 export function ProjectList() {
   const queryClient = useQueryClient();
@@ -28,7 +30,7 @@ export function ProjectList() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div {...pageTransition}>
       <header className="page-header">
         <h1>Projects</h1>
       </header>
@@ -60,14 +62,19 @@ export function ProjectList() {
       </form>
 
       <h2>Your projects</h2>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Spinner label="Loading projects..." />}
       <ul className="project-list">
-        {projects?.map((project) => (
-          <li key={project.id}>
+        {projects?.map((project, index) => (
+          <motion.li
+            key={project.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+          >
             <Link to={`/projects/${project.id}`}>
               {project.repo_owner}/{project.repo_name}
             </Link>
-          </li>
+          </motion.li>
         ))}
       </ul>
     </motion.div>
