@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { getReview } from "../api/projects";
+import { pageTransition } from "../components/pageTransition";
+import { Spinner } from "../components/Spinner";
 import type { Finding } from "../types";
 
 const SEVERITY_ORDER: Record<Finding["severity"], number> = { critical: 0, high: 1, medium: 2, low: 3 };
@@ -16,7 +18,7 @@ export function ReviewDetail() {
     queryFn: () => getReview(id, rId),
   });
 
-  if (isLoading) return <p>Loading review...</p>;
+  if (isLoading) return <Spinner label="Loading review..." />;
   if (!review) return <p>Review not found.</p>;
 
   const sortedFindings = [...review.findings].sort(
@@ -24,7 +26,7 @@ export function ReviewDetail() {
   );
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div {...pageTransition}>
       <header className="page-header">
         <h1>
           PR #{review.pr_number}: {review.pr_title}

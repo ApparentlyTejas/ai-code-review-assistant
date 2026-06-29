@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { listReviews } from "../api/projects";
+import { pageTransition } from "../components/pageTransition";
+import { Spinner } from "../components/Spinner";
 
 export function ReviewHistory() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -13,12 +15,12 @@ export function ReviewHistory() {
   });
 
   return (
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+    <motion.div {...pageTransition}>
       <header className="page-header">
         <h1>Review history</h1>
       </header>
 
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Spinner label="Loading review history..." />}
 
       <ul className="review-history-list">
         {reviews?.map((review, index) => (
