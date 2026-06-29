@@ -171,7 +171,7 @@ button:hover:not(:disabled) {
 }
 
 button:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 button:disabled {
@@ -432,6 +432,10 @@ pre {
   opacity: 0.9;
 }
 
+.btn-pill:active {
+  transform: translateY(0) scale(0.96);
+}
+
 .btn-pill.outline {
   background: transparent;
   border: 1px solid var(--border-on-dark);
@@ -444,6 +448,16 @@ pre {
   font-size: 13px;
   color: var(--text-on-dark-secondary);
   z-index: 1;
+  animation: scroll-cue-bounce 2s ease-in-out infinite;
+}
+
+@keyframes scroll-cue-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 .section {
@@ -492,6 +506,12 @@ pre {
   background: var(--bg-subtle);
   border-radius: 22px;
   padding: 32px 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
 }
 
 .feature-card .feature-icon {
@@ -561,6 +581,11 @@ pre {
   text-align: left;
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
   overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.mock-finding-card:hover {
+  transform: translateY(-4px) scale(1.01);
 }
 
 .mock-finding-chrome {
@@ -623,4 +648,27 @@ pre {
   font-size: 13px;
   color: var(--text-secondary);
   border-top: 1px solid var(--border);
+}
+
+.spinner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spinner-rotate 0.7s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
