@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import { useAuth } from "../auth/AuthContext";
+import { pageTransition } from "../components/pageTransition";
 
 export function Register() {
   const { login } = useAuth();
@@ -28,12 +29,7 @@ export function Register() {
   }
 
   return (
-    <motion.div
-      className="auth-page"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-    >
+    <motion.div className="auth-page" {...pageTransition}>
       <Link to="/" style={{ display: "block", marginBottom: 28, fontWeight: 600, color: "var(--text)" }}>
         AI Code Review
       </Link>
