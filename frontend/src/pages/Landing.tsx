@@ -16,7 +16,7 @@ export function Landing() {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
 
   return (
-    <div className="landing">
+    <motion.div className="landing" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
       <nav className="landing-nav">
         <span className="landing-nav-brand">AI Code Review</span>
         <div className="landing-nav-links">
@@ -191,6 +191,6 @@ export function Landing() {
       <footer className="landing-footer">
         AI Code Review Assistant. A portfolio project built with FastAPI, React, and Groq.
       </footer>
-    </div>
+    </motion.div>
   );
 }
