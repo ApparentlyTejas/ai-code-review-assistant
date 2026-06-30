@@ -36,3 +36,47 @@ export function UserIcon() {
     </svg>
   );
 }
+
+export function FolderIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <path d="M4 7a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" />
+    </svg>
+  );
+}
+
+export function ReviewCheckIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <rect x="5" y="3.5" width="14" height="17" rx="2.2" />
+      <path d="M9 3.5V3a1.6 1.6 0 0 1 1.6-1.6h2.8A1.6 1.6 0 0 1 15 3v.5" />
+      <path d="m9 12.5 2 2 4-4.2" />
+    </svg>
+  );
+}
+
+export function FlagIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <path d="M5 3v18" />
+      <path d="M5 4h11l-2 4 2 4H5" />
+    </svg>
+  );
+}
+
+export function RepoIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <path d="M6.5 4A2.5 2.5 0 0 0 4 6.5v11A2.5 2.5 0 0 0 6.5 20H19V4H6.5Z" />
+      <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H19" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}

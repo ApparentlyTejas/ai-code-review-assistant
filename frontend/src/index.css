@@ -43,7 +43,7 @@ a {
 /* ---------- App shell (authenticated pages) ---------- */
 
 .app-container {
-  max-width: 860px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 40px 22px 100px;
 }
@@ -107,6 +107,12 @@ h2 {
   margin-bottom: 28px;
 }
 
+.page-subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
 .auth-page {
   max-width: 380px;
   margin: 90px auto;
@@ -129,9 +135,10 @@ h2 {
 .connect-repo-form {
   background: var(--bg-subtle);
   border-radius: 18px;
-  padding: 24px;
-  margin-top: 16px;
-  margin-bottom: 40px;
+  padding: 20px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
 }
 
 label {
@@ -196,6 +203,11 @@ button.secondary:hover:not(:disabled) {
   background: #e8e8ed;
 }
 
+button.small {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
 .error {
   color: var(--danger);
   font-size: 14px;
@@ -209,7 +221,7 @@ button.secondary:hover:not(:disabled) {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .pull-request-list li,
@@ -232,15 +244,51 @@ button.secondary:hover:not(:disabled) {
 
 .project-list li {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 18px;
-  text-align: left;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .project-list li:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   transform: translateY(-1px);
+  border-color: var(--accent);
+}
+
+.project-list a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-list-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.project-list-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-list-chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 .finding {
@@ -297,24 +345,40 @@ button.secondary:hover:not(:disabled) {
   color: var(--danger);
 }
 
-.dashboard-overview {
-  margin-bottom: 32px;
-}
-
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .stat-card {
   background: var(--bg-subtle);
+  border: 1px solid transparent;
   border-radius: 18px;
   padding: 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  border-color: var(--border);
+}
+
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(0, 113, 227, 0.1);
+  color: var(--accent);
+  margin-bottom: 12px;
 }
 
 .stat-value {
@@ -357,10 +421,33 @@ button.secondary:hover:not(:disabled) {
   color: #6e6e73;
 }
 
-.empty-state {
-  color: var(--text-secondary);
-  font-size: 14px;
-  margin-bottom: 8px;
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.dashboard-main h2,
+.dashboard-side h2 {
+  margin-bottom: 14px;
+}
+
+.side-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.side-panel-header h2 {
+  margin-bottom: 0;
+}
+
+.dashboard-side .project-list {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .recent-activity-list {
@@ -426,6 +513,12 @@ button.secondary:hover:not(:disabled) {
   font-size: 13px;
   color: var(--text-secondary);
   white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
