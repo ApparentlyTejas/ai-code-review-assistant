@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { ScrollReveal } from "../components/ScrollReveal";
 import { ConnectIcon, LockIcon, UserIcon } from "../components/Icons";
+import { Logo } from "../components/Logo";
 import { useAuth } from "../auth/AuthContext";
 
 const TECH_STACK = ["Python", "FastAPI", "React", "PostgreSQL", "Groq", "Llama 3.3"];
@@ -19,7 +20,7 @@ export function Landing() {
     <motion.div className="landing" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
       <nav className="landing-nav">
         <span className="landing-nav-brand">
-          <span className="logo-mark">{"</>"}</span>
+          <Logo size={26} />
           AI Code Review
         </span>
         <div className="landing-nav-center">
