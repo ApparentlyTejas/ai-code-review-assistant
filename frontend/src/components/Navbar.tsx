@@ -6,7 +6,7 @@ export function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/projects" className="navbar-brand">
+      <Link to="/" className="navbar-brand">
         AI Code Review
       </Link>
       <div className="navbar-links">
