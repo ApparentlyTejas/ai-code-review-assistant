@@ -27,6 +27,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
 }
@@ -322,19 +326,64 @@ pre {
   left: 0;
   right: 0;
   z-index: 50;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 32px;
-  height: 52px;
+  height: 56px;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.landing-nav-links {
+  justify-self: end;
 }
 
 .landing-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
   font-size: 15px;
   letter-spacing: -0.01em;
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--text);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.landing-nav-center {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.landing-nav-center a {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.landing-nav-center a:hover {
+  color: var(--text);
+}
+
+@media (max-width: 720px) {
+  .landing-nav-center {
+    display: none;
+  }
 }
 
 .landing-nav-links {
@@ -465,6 +514,7 @@ pre {
   max-width: 1080px;
   margin: 0 auto;
   text-align: center;
+  scroll-margin-top: 56px;
 }
 
 .section-eyebrow {

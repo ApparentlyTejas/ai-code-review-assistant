@@ -18,8 +18,19 @@ export function Landing() {
   return (
     <motion.div className="landing" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
       <nav className="landing-nav">
-        <span className="landing-nav-brand">AI Code Review</span>
+        <span className="landing-nav-brand">
+          <span className="logo-mark">{"</>"}</span>
+          AI Code Review
+        </span>
+        <div className="landing-nav-center">
+          <a href="#connect">Connect</a>
+          <a href="#review">Review</a>
+          <a href="#stack">Stack</a>
+        </div>
         <div className="landing-nav-links">
+          <a href="https://github.com/ApparentlyTejas/ai-code-review-assistant" target="_blank" rel="noreferrer">
+            GitHub ↗
+          </a>
           {user ? (
             <Link to="/projects" className="btn-pill" style={{ padding: "8px 18px", fontSize: 13 }}>
               Dashboard
@@ -85,7 +96,7 @@ export function Landing() {
         </motion.div>
       </div>
 
-      <section className="section">
+      <section className="section" id="connect">
         <ScrollReveal>
           <p className="section-eyebrow">CONNECT</p>
           <h2>Your repo, connected safely.</h2>
@@ -125,7 +136,7 @@ export function Landing() {
         </div>
       </section>
 
-      <section className="section section-dark">
+      <section className="section section-dark" id="review">
         <ScrollReveal>
           <p className="section-eyebrow">REVIEW</p>
           <h2>Findings that read like a real review.</h2>
@@ -162,7 +173,7 @@ export function Landing() {
         </ScrollReveal>
       </section>
 
-      <section className="section">
+      <section className="section" id="stack">
         <ScrollReveal>
           <p className="section-eyebrow">STACK</p>
           <h2>The stack behind it.</h2>
