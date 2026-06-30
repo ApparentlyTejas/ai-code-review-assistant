@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
+import { useToast } from "../components/Toast";
+import { usePageTitle } from "../hooks/usePageTitle";
 import type { FindingSeverity } from "../types";
 
 const SEVERITY_ORDER: FindingSeverity[] = ["critical", "high", "medium", "low"];
@@ -23,6 +26,10 @@ function timeAgo(isoDate: string): string {
 
 export function ProjectList() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  usePageTitle("Dashboard");
+
   const { data: projects, isLoading } = useQuery({ queryKey: ["projects"], queryFn: listProjects });
   const { data: summary } = useQuery({ queryKey: ["dashboard-summary"], queryFn: getDashboardSummary });
 
@@ -32,11 +39,17 @@ export function ProjectList() {
 
   const createMutation = useMutation({
     mutationFn: () => createProject(repoOwner, repoName, githubPat),
-    onSuccess: () => {
+    onSuccess: (project) => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
       setRepoOwner("");
       setRepoName("");
       setGithubPat("");
+      toast(`${project.repo_owner}/${project.repo_name} connected successfully.`);
+    },
+    onError: (err: AxiosError<{ detail: string }>) => {
+      const detail = err.response?.data?.detail ?? "Failed to connect repo. Check the token and repo name.";
+      toast(detail, "error");
     },
   });
 
@@ -148,7 +161,6 @@ export function ProjectList() {
             required
           />
         </label>
-        {createMutation.isError && <p className="error">Failed to connect repo. Check the token and repo name.</p>}
         <button type="submit" disabled={createMutation.isPending}>
           {createMutation.isPending ? "Connecting..." : "Connect"}
         </button>
