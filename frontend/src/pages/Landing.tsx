@@ -200,7 +200,13 @@ export function Landing() {
       </section>
 
       <footer className="landing-footer">
-        AI Code Review Assistant. A portfolio project built with FastAPI, React, and Groq.
+        <p>AI Code Review Assistant. A portfolio project built with FastAPI, React, and Groq.</p>
+        <p>
+          Built by{" "}
+          <a href="https://github.com/ApparentlyTejas" target="_blank" rel="noreferrer">
+            @ApparentlyTejas
+          </a>
+        </p>
       </footer>
     </motion.div>
   );
