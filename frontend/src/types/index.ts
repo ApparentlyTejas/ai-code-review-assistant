@@ -54,3 +54,23 @@ export interface ReviewSummary {
   created_at: string;
   finding_count: number;
 }
+
+export interface RecentReview {
+  id: number;
+  project_id: number;
+  repo_owner: string;
+  repo_name: string;
+  pr_number: number;
+  pr_title: string;
+  status: ReviewStatus;
+  finding_count: number;
+  created_at: string;
+}
+
+export interface DashboardSummary {
+  total_projects: number;
+  total_reviews: number;
+  total_findings: number;
+  findings_by_severity: Partial<Record<FindingSeverity, number>>;
+  recent_reviews: RecentReview[];
+}
