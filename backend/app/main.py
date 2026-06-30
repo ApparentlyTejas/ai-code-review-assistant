@@ -6,7 +6,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import settings
 from app.core.limiter import limiter
-from app.routers import auth, projects, reviews
+from app.routers import auth, dashboard, projects, reviews
 
 app = FastAPI(title="AI Code Review Assistant")
 
@@ -25,6 +25,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(projects.router)
 app.include_router(reviews.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/health")
