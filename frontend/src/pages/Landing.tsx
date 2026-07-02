@@ -6,7 +6,14 @@ import { ConnectIcon, LockIcon, UserIcon } from "../components/Icons";
 import { Logo } from "../components/Logo";
 import { useAuth } from "../auth/AuthContext";
 
-const TECH_STACK = ["Python", "FastAPI", "React", "PostgreSQL", "Groq", "Llama 3.3"];
+const STACK = [
+  { key: "backend", val: "Python 3.12 · FastAPI · SQLAlchemy · Alembic · Pydantic v2" },
+  { key: "auth", val: "JWT · bcrypt · Fernet symmetric encryption" },
+  { key: "database", val: "PostgreSQL (Neon on prod)" },
+  { key: "llm", val: "Groq API · Llama 3.3 70B · enforced output format" },
+  { key: "frontend", val: "React 19 · TypeScript · Vite · TanStack Query · Framer Motion" },
+  { key: "deploy", val: "Render · Neon · Vercel · GitHub Actions CI" },
+];
 
 export function Landing() {
   const { user } = useAuth();
@@ -24,8 +31,8 @@ export function Landing() {
           AI Code Review
         </span>
         <div className="landing-nav-center">
-          <a href="#connect">Connect</a>
-          <a href="#review">Review</a>
+          <a href="#connect">Setup</a>
+          <a href="#review">How it works</a>
           <a href="#stack">Stack</a>
         </div>
         <div className="landing-nav-links">
@@ -50,26 +57,22 @@ export function Landing() {
       <div className="hero" ref={heroRef}>
         <motion.div className="hero-glow" style={{ y: glowY }} />
         <motion.div className="hero-content" style={{ opacity: heroOpacity, scale: heroScale }}>
-          <motion.p
-            className="hero-eyebrow"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            AI POWERED CODE REVIEW
-          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Every pull request.
+            Catch the bugs
             <br />
-            Reviewed instantly.
+            your reviewers miss.
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-            Connect a GitHub repo, pick an open pull request, and get back structured findings on bugs, security
-            issues, and style, ranked by severity.
+          <motion.p
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            Paste a GitHub token, pick an open PR, and in about 20 seconds you get a full breakdown:
+            what's broken, what's a security hole, and what's just sloppy. Ranked by how bad it actually is.
           </motion.p>
           <motion.div
             className="hero-actions"
@@ -78,7 +81,7 @@ export function Landing() {
             transition={{ duration: 0.7, delay: 0.3 }}
           >
             <Link to={user ? "/projects" : "/register"} className="btn-pill">
-              {user ? "Go to dashboard" : "Get started free"}
+              {user ? "Go to dashboard" : "Start reviewing →"}
             </Link>
             {!user && (
               <Link to="/login" className="btn-pill outline">
@@ -99,11 +102,14 @@ export function Landing() {
 
       <section className="section" id="connect">
         <ScrollReveal>
-          <p className="section-eyebrow">CONNECT</p>
-          <h2>Your repo, connected safely.</h2>
+          <h2>
+            No OAuth dance.
+            <br />
+            Just paste a token.
+          </h2>
           <p className="lead">
-            Add a GitHub personal access token. Real access is confirmed through the GitHub API before anything
-            is saved.
+            A GitHub personal access token and a repo name is all it takes. Access is confirmed live
+            through the GitHub API before anything gets stored.
           </p>
         </ScrollReveal>
         <div className="feature-grid">
@@ -112,8 +118,11 @@ export function Landing() {
               <span className="feature-icon">
                 <ConnectIcon />
               </span>
-              <h3>One-step connect</h3>
-              <p>Paste a personal access token and a repo name. Access is checked through the GitHub API first.</p>
+              <h3>Under a minute to get going</h3>
+              <p>
+                Repo name plus a PAT. No redirect flows, no permission wizard, no waiting for someone to
+                approve a scope.
+              </p>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={0.1}>
@@ -121,8 +130,11 @@ export function Landing() {
               <span className="feature-icon">
                 <LockIcon />
               </span>
-              <h3>Encrypted at rest</h3>
-              <p>Tokens are encrypted with Fernet before they're stored, and the API never sends them back.</p>
+              <h3>Your token stays yours</h3>
+              <p>
+                Encrypted with Fernet before it touches the database. The API never returns it. Not even
+                in responses you'd expect it in.
+              </p>
             </div>
           </ScrollReveal>
           <ScrollReveal delay={0.2}>
@@ -130,8 +142,11 @@ export function Landing() {
               <span className="feature-icon">
                 <UserIcon />
               </span>
-              <h3>Your own account</h3>
-              <p>Sign in with email and password. Every project you connect stays private to your account.</p>
+              <h3>Private by default</h3>
+              <p>
+                Your projects only appear on your account. There's no shared access, no team view, no
+                accidental leaks.
+              </p>
             </div>
           </ScrollReveal>
         </div>
@@ -139,11 +154,14 @@ export function Landing() {
 
       <section className="section section-dark" id="review">
         <ScrollReveal>
-          <p className="section-eyebrow">REVIEW</p>
-          <h2>Findings that read like a real review.</h2>
+          <h2>
+            Not "looks suspicious."
+            <br />
+            Exactly what. Exactly where.
+          </h2>
           <p className="lead">
-            Each diff is sent to an LLM with a structured schema, so findings come back categorized, ranked by
-            severity, and tied to a real line in the code.
+            The diff goes to Llama 3.3 70B with a strict output format. No free-form guessing.
+            Just category, severity, file path, line number, and a concrete fix.
           </p>
         </ScrollReveal>
         <ScrollReveal delay={0.15}>
@@ -166,7 +184,8 @@ export function Landing() {
                   User input is concatenated directly into a SQL query, exposing the endpoint to injection attacks.
                 </p>
                 <p className="mock-finding-fix">
-                  Suggested fix: use parameterized queries via the driver's placeholder syntax.
+                  Suggested fix: use parameterized queries. If you're on SQLAlchemy's ORM this is
+                  handled for you, which means raw SQL is sneaking in somewhere it shouldn't.
                 </p>
               </div>
             </div>
@@ -176,16 +195,19 @@ export function Landing() {
 
       <section className="section" id="stack">
         <ScrollReveal>
-          <p className="section-eyebrow">STACK</p>
-          <h2>The stack behind it.</h2>
-          <p className="lead">A relational schema, JWT auth, encrypted secrets, and a live LLM in the review loop.</p>
+          <h2>No magic. Just solid choices.</h2>
+          <p className="lead">
+            Proper auth, encrypted secrets, a real database, and an actual LLM doing the work.
+            No shortcuts taken on the boring parts.
+          </p>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-            {TECH_STACK.map((tech) => (
-              <span key={tech} className="badge" style={{ fontSize: 13, padding: "8px 18px" }}>
-                {tech}
-              </span>
+          <div className="stack-code-block">
+            {STACK.map(({ key, val }) => (
+              <div key={key} className="stack-code-row">
+                <span className="stack-code-key">{key}</span>
+                <span className="stack-code-val">{val}</span>
+              </div>
             ))}
           </div>
         </ScrollReveal>
@@ -193,15 +215,18 @@ export function Landing() {
 
       <section className="cta-section">
         <ScrollReveal>
-          <h2>Try it on your own repo.</h2>
-          <Link to={user ? "/projects" : "/register"} className="btn-pill" style={{ background: "var(--accent)", color: "#fff" }}>
-            {user ? "Go to dashboard" : "Get started free"}
+          <h2>Run it on your next PR.</h2>
+          <Link
+            to={user ? "/projects" : "/register"}
+            className="btn-pill"
+            style={{ background: "var(--accent)", color: "#fff" }}
+          >
+            {user ? "Go to dashboard" : "Connect a repo →"}
           </Link>
         </ScrollReveal>
       </section>
 
       <footer className="landing-footer">
-        <p>AI Code Review Assistant. A portfolio project built with FastAPI, React, and Groq.</p>
         <p>
           Built by{" "}
           <a href="https://github.com/ApparentlyTejas" target="_blank" rel="noreferrer">
