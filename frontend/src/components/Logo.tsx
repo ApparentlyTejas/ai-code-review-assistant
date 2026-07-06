@@ -7,8 +7,8 @@ export function Logo({ size = 28 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#1a8cff" />
-          <stop offset="100%" stopColor="#0040c1" />
+          <stop offset="0%" stopColor="#059669" />
+          <stop offset="100%" stopColor="#047857" />
         </linearGradient>
       </defs>
       <rect width="28" height="28" rx="7" fill={`url(#${gradientId})`} />
