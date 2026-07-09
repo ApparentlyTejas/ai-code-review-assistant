@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getReview } from "../api/projects";
 import { BackButton } from "../components/BackButton";
 import { pageTransition } from "../components/pageTransition";
