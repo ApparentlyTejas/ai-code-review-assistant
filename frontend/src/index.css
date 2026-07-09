@@ -13,9 +13,8 @@
   --accent-dark-bg: #34d399;
   --danger: #c0392b;
 
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, "Segoe UI", Roboto,
+  --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
-  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
   --mono: ui-monospace, "SF Mono", Consolas, monospace;
 
   font: 17px/1.47 var(--sans);
@@ -87,25 +86,18 @@ a {
 }
 
 h1 {
-  font-family: var(--serif);
   font-size: 32px;
-  font-weight: 400;
-  letter-spacing: -0.005em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text);
   margin: 0 0 16px;
 }
 
 h2 {
-  font-family: var(--serif);
   font-size: 19px;
-  font-weight: 400;
-  letter-spacing: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--text);
-}
-
-h3 {
-  font-family: var(--serif);
-  font-weight: 400;
 }
 
 .page-header {
@@ -670,12 +662,10 @@ pre {
 }
 
 .hero h1 {
-  font-family: var(--serif);
   font-size: clamp(42px, 7vw, 92px);
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: -0.01em;
-  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
   color: var(--text-on-dark);
   max-width: 900px;
   margin: 0 auto 24px;
@@ -762,11 +752,10 @@ pre {
 }
 
 .section h2 {
-  font-family: var(--serif);
   font-size: clamp(34px, 5vw, 60px);
-  font-weight: 400;
-  letter-spacing: -0.005em;
-  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   margin: 0 0 20px;
 }
 
@@ -810,10 +799,9 @@ pre {
 }
 
 .feature-card h3 {
-  font-family: var(--serif);
-  font-size: 20px;
-  font-weight: 400;
-  letter-spacing: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   margin: 0 0 10px;
 }
 
@@ -973,11 +961,9 @@ pre {
 }
 
 .cta-section h2 {
-  font-family: var(--serif);
   font-size: clamp(34px, 5vw, 60px);
-  font-weight: 400;
-  font-style: italic;
-  letter-spacing: -0.005em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 36px;
 }
 
