@@ -5,14 +5,30 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
-import { ChevronRightIcon, FlagIcon, FolderIcon, RepoIcon, ReviewCheckIcon } from "../components/Icons";
+import { ChevronRightIcon } from "../components/Icons";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
 import { useToast } from "../components/Toast";
 import { usePageTitle } from "../hooks/usePageTitle";
-import type { FindingSeverity } from "../types";
+import type { FindingSeverity, ReviewStatus } from "../types";
 
 const SEVERITY_ORDER: FindingSeverity[] = ["critical", "high", "medium", "low"];
+
+const STATUS_COLOR: Record<ReviewStatus, string> = {
+  completed: "#34c759",
+  pending: "#f59e0b",
+  failed: "#ef4444",
+};
+
+const AVATAR_PALETTE = ["#7c3aed", "#db2777", "#2563eb", "#ea580c", "#0891b2", "#059669"];
+
+function repoAvatarColor(owner: string): string {
+  return AVATAR_PALETTE[owner.charCodeAt(0) % AVATAR_PALETTE.length];
+}
+
+function repoInitials(owner: string): string {
+  return owner.slice(0, 2).toUpperCase();
+}
 
 function timeAgo(isoDate: string): string {
   const seconds = Math.floor((Date.now() - new Date(isoDate).getTime()) / 1000);
@@ -66,95 +82,99 @@ export function ProjectList() {
 
   return (
     <motion.div {...pageTransition}>
-      <header className="page-header">
+      <header className="dash-header">
         <div>
           <h1>Dashboard</h1>
-          <p className="page-subtitle">Welcome back — here's what's been happening across your repos.</p>
+          <p className="page-subtitle">Here's what's happening across your repos.</p>
         </div>
       </header>
 
       {summary && (
         <div className="stat-cards">
-          <motion.div
-            className="stat-card"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <span className="stat-icon">
-              <FolderIcon />
-            </span>
-            <span className="stat-value">{summary.total_projects}</span>
-            <span className="stat-label">Projects</span>
-          </motion.div>
-          <motion.div
-            className="stat-card"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.05 }}
-          >
-            <span className="stat-icon">
-              <ReviewCheckIcon />
-            </span>
-            <span className="stat-value">{summary.total_reviews}</span>
-            <span className="stat-label">Reviews run</span>
-          </motion.div>
-          <motion.div
-            className="stat-card"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <span className="stat-icon">
-              <FlagIcon />
-            </span>
-            <span className="stat-value">{summary.total_findings}</span>
-            <span className="stat-label">Findings flagged</span>
-            {summary.total_findings > 0 && (
-              <div className="stat-severity-breakdown">
-                {SEVERITY_ORDER.filter((severity) => summary.findings_by_severity[severity]).map((severity) => (
-                  <span key={severity} className={`badge severity-${severity}`}>
-                    {summary.findings_by_severity[severity]} {severity}
-                  </span>
-                ))}
-              </div>
-            )}
-          </motion.div>
+          {[
+            {
+              label: "Projects",
+              value: summary.total_projects,
+              sub: "repositories connected",
+            },
+            {
+              label: "Reviews",
+              value: summary.total_reviews,
+              sub: "AI reviews completed",
+            },
+            {
+              label: "Findings",
+              value: summary.total_findings,
+              sub: null,
+            },
+          ].map((card, i) => (
+            <motion.div
+              key={card.label}
+              className="stat-card"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, delay: i * 0.06 }}
+            >
+              <span className="stat-card-label">{card.label}</span>
+              <span className="stat-card-value">{card.value}</span>
+              {card.label === "Findings" && summary.total_findings > 0 ? (
+                <div className="stat-severity-breakdown">
+                  {SEVERITY_ORDER.filter((s) => summary.findings_by_severity[s]).map((s) => (
+                    <span key={s} className={`badge severity-${s}`}>
+                      {summary.findings_by_severity[s]} {s}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="stat-card-sub">{card.sub}</span>
+              )}
+            </motion.div>
+          ))}
         </div>
       )}
 
       <div className="dashboard-grid">
         <section className="dashboard-main">
-          <h2>Recent activity</h2>
+          <div className="dash-section-header">
+            <h2>Recent activity</h2>
+            {summary && summary.recent_reviews.length > 0 && (
+              <span className="dash-section-count">{summary.recent_reviews.length} reviews</span>
+            )}
+          </div>
+
           {summary && summary.recent_reviews.length === 0 ? (
             <div className="empty-state-box">
               <p>No reviews yet.</p>
               <p>Connect a repo and run your first review to see activity here.</p>
             </div>
           ) : (
-            <ul className="recent-activity-list">
+            <ul className="activity-list">
               {summary?.recent_reviews.map((review, index) => (
                 <motion.li
                   key={review.id}
-                  initial={{ opacity: 0, y: 8 }}
+                  className="activity-item"
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  transition={{ duration: 0.22, delay: index * 0.04 }}
                 >
-                  <Link to={`/projects/${review.project_id}/reviews/${review.id}`}>
-                    <div className="recent-activity-main">
-                      <span className="recent-activity-repo">
-                        {review.repo_owner}/{review.repo_name}
-                      </span>
-                      <span className="recent-activity-pr">
-                        #{review.pr_number} {review.pr_title}
+                  <span
+                    className="activity-status-bar"
+                    style={{ background: STATUS_COLOR[review.status] }}
+                  />
+                  <Link to={`/projects/${review.project_id}/reviews/${review.id}`} className="activity-link">
+                    <div className="activity-left">
+                      <span className="activity-repo">{review.repo_owner}/{review.repo_name}</span>
+                      <span className="activity-pr">
+                        <span className="activity-pr-num">#{review.pr_number}</span>
+                        {review.pr_title}
                       </span>
                     </div>
-                    <div className="recent-activity-meta">
+                    <div className="activity-right">
                       <span className={`badge status-${review.status}`}>{review.status}</span>
-                      <span className="recent-activity-findings">
+                      <span className="activity-findings">
                         {review.finding_count} {review.finding_count === 1 ? "finding" : "findings"}
                       </span>
-                      <span className="recent-activity-time">{timeAgo(review.created_at)}</span>
+                      <span className="activity-time">{timeAgo(review.created_at)}</span>
                     </div>
                   </Link>
                 </motion.li>
@@ -164,15 +184,15 @@ export function ProjectList() {
         </section>
 
         <aside className="dashboard-side">
-          <div className="side-panel-header">
-            <h2>Your projects</h2>
+          <div className="dash-section-header">
+            <h2>Repositories</h2>
             {!hasNoProjects && (
               <button
                 type="button"
                 className="secondary small"
                 onClick={() => setShowConnectForm((v) => !v)}
               >
-                {showConnectForm ? "Cancel" : "+ Connect repo"}
+                {showConnectForm ? "Cancel" : "+ Add"}
               </button>
             )}
           </div>
@@ -216,7 +236,7 @@ export function ProjectList() {
                   />
                 </label>
                 <button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Connecting..." : "Connect"}
+                  {createMutation.isPending ? "Connecting..." : "Connect repository"}
                 </button>
               </motion.form>
             )}
@@ -229,13 +249,16 @@ export function ProjectList() {
               {projects?.map((project, index) => (
                 <motion.li
                   key={project.id}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  transition={{ duration: 0.22, delay: index * 0.04 }}
                 >
                   <Link to={`/projects/${project.id}`}>
-                    <span className="project-list-icon">
-                      <RepoIcon />
+                    <span
+                      className="repo-avatar"
+                      style={{ background: repoAvatarColor(project.repo_owner) }}
+                    >
+                      {repoInitials(project.repo_owner)}
                     </span>
                     <span className="project-list-name">
                       {project.repo_owner}/{project.repo_name}
