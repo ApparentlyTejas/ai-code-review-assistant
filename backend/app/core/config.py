@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     groq_api_key: str
 
     cors_origins: str = "http://localhost:5173"
+    cookie_secure: bool = False  # Set to True in production (HTTPS only)
 
     @property
     def cors_origins_list(self) -> list[str]:

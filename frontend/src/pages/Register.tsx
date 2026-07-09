@@ -22,7 +22,12 @@ export function Register() {
       await login(email, password);
       navigate("/projects");
     } catch (err: any) {
-      setError(err?.response?.data?.detail ?? "Registration failed");
+      const status = err?.response?.status;
+      if (status === 409) {
+        setError("An account with this email already exists. Try logging in instead.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

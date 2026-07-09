@@ -6,9 +6,12 @@ export async function registerUser(email: string, password: string): Promise<Use
   return data;
 }
 
-export async function loginUser(email: string, password: string): Promise<string> {
-  const { data } = await apiClient.post<{ access_token: string }>("/auth/login", { email, password });
-  return data.access_token;
+export async function loginUser(email: string, password: string): Promise<void> {
+  await apiClient.post("/auth/login", { email, password });
+}
+
+export async function logoutUser(): Promise<void> {
+  await apiClient.post("/auth/logout");
 }
 
 export async function getCurrentUser(): Promise<User> {
