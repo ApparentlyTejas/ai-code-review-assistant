@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
 import { ChevronRightIcon } from "../components/Icons";
@@ -19,6 +20,26 @@ const STATUS_COLOR: Record<ReviewStatus, string> = {
   pending: "#f59e0b",
   failed: "#ef4444",
 };
+
+const SEVERITY_COLOR: Record<FindingSeverity, string> = {
+  critical: "#ef4444",
+  high: "#f97316",
+  medium: "#eab308",
+  low: "#94a3b8",
+};
+
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function displayName(email: string): string {
+  const local = email.split("@")[0];
+  const first = local.split(/[._]/)[0];
+  return first.charAt(0).toUpperCase() + first.slice(1);
+}
 
 const AVATAR_PALETTE = ["#7c3aed", "#db2777", "#2563eb", "#ea580c", "#0891b2", "#059669"];
 
@@ -42,6 +63,7 @@ function timeAgo(isoDate: string): string {
 }
 
 export function ProjectList() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -84,6 +106,7 @@ export function ProjectList() {
     <motion.div {...pageTransition}>
       <header className="dash-header">
         <div>
+          <p className="dash-greeting">{greeting()}{user ? `, ${displayName(user.email)}` : ""}.</p>
           <h1>Dashboard</h1>
           <p className="page-subtitle">Here's what's happening across your repos.</p>
         </div>
@@ -118,11 +141,17 @@ export function ProjectList() {
               <span className="stat-card-label">{card.label}</span>
               <span className="stat-card-value">{card.value}</span>
               {card.label === "Findings" && summary.total_findings > 0 ? (
-                <div className="stat-severity-breakdown">
+                <div className="severity-bar">
                   {SEVERITY_ORDER.filter((s) => summary.findings_by_severity[s]).map((s) => (
-                    <span key={s} className={`badge severity-${s}`}>
-                      {summary.findings_by_severity[s]} {s}
-                    </span>
+                    <div
+                      key={s}
+                      className="severity-bar-segment"
+                      style={{
+                        flex: summary.findings_by_severity[s],
+                        background: SEVERITY_COLOR[s],
+                      }}
+                      title={`${summary.findings_by_severity[s]} ${s}`}
+                    />
                   ))}
                 </div>
               ) : (
@@ -144,8 +173,13 @@ export function ProjectList() {
 
           {summary && summary.recent_reviews.length === 0 ? (
             <div className="empty-state-box">
-              <p>No reviews yet.</p>
-              <p>Connect a repo and run your first review to see activity here.</p>
+              <p className="empty-state-title">No reviews yet</p>
+              <p>Run your first AI review to see activity here.</p>
+              <ul className="empty-state-steps">
+                <li><span className="empty-state-step-num">1</span>Connect a GitHub repository</li>
+                <li><span className="empty-state-step-num">2</span>Pick an open pull request</li>
+                <li><span className="empty-state-step-num">3</span>Get a full review in ~20 seconds</li>
+              </ul>
             </div>
           ) : (
             <ul className="activity-list">
@@ -159,6 +193,7 @@ export function ProjectList() {
                 >
                   <span
                     className="activity-status-bar"
+                    data-status={review.status}
                     style={{ background: STATUS_COLOR[review.status] }}
                   />
                   <Link to={`/projects/${review.project_id}/reviews/${review.id}`} className="activity-link">

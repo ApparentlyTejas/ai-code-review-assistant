@@ -33,6 +33,8 @@ html {
 
 body {
   margin: 0;
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 a {
@@ -57,7 +59,7 @@ a {
   align-items: center;
   padding: 0 22px;
   height: 52px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(250, 249, 247, 0.88);
   backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -399,6 +401,29 @@ button.small {
   margin-top: 10px;
 }
 
+.severity-bar {
+  display: flex;
+  height: 5px;
+  border-radius: 3px;
+  overflow: hidden;
+  gap: 2px;
+  margin-top: 14px;
+}
+
+.severity-bar-segment {
+  border-radius: 2px;
+  min-width: 4px;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.activity-status-bar[data-status="pending"] {
+  animation: status-pulse 1.8s ease-in-out infinite;
+}
+
 .badge.severity-critical {
   background: rgba(192, 57, 41, 0.15);
   color: #c0392b;
@@ -428,6 +453,14 @@ button.small {
   margin-bottom: 32px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--border);
+}
+
+.dash-greeting {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 6px;
+  letter-spacing: 0.01em;
 }
 
 .dash-header h1 {
@@ -638,7 +671,7 @@ pre {
   align-items: center;
   padding: 0 32px;
   height: 56px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(250, 249, 247, 0.88);
   backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -1160,21 +1193,64 @@ pre {
 /* ---------- Empty state ---------- */
 
 .empty-state-box {
-  background: var(--bg-subtle);
+  background: var(--bg);
+  border: 1px dashed var(--border);
   border-radius: 10px;
-  padding: 32px;
+  padding: 40px 32px;
   text-align: center;
-  margin: 24px 0;
+  margin: 8px 0;
 }
 
 .empty-state-box p {
   margin: 0 0 6px;
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .empty-state-box p:last-child {
   margin: 0;
+}
+
+.empty-state-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.empty-state-steps {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.empty-state-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 /* ---------- Already-reviewed badge ---------- */
