@@ -9,8 +9,8 @@
   --border: #d8d6d0;
   --border-on-dark: #3a3a36;
   --code-bg: #f0eeeb;
-  --accent: #059669;
-  --accent-dark-bg: #34d399;
+  --accent: #7c3aed;
+  --accent-dark-bg: #a78bfa;
   --danger: #c0392b;
 
   --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto,
@@ -163,7 +163,7 @@ input {
 input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.12);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
 }
 
 button {
@@ -180,7 +180,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #047857;
+  background: #6d28d9;
   transform: translateY(-1px);
 }
 
@@ -641,7 +641,7 @@ pre {
 .hero-glow {
   position: absolute;
   inset: -20%;
-  background: radial-gradient(ellipse at 40% 50%, rgba(52, 211, 153, 0.15), transparent 55%);
+  background: radial-gradient(ellipse at 40% 50%, rgba(124, 58, 237, 0.2), transparent 55%);
   pointer-events: none;
 }
 
