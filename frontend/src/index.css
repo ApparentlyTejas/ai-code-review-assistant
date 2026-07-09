@@ -363,12 +363,20 @@ button.small {
   display: flex;
   flex-direction: column;
   gap: 0;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .stat-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
   transform: translateY(-2px);
+  border-color: var(--accent);
+  border-top-color: var(--accent);
+}
+
+.stat-card:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
 }
 
 .stat-card-label {

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
@@ -64,6 +64,7 @@ function timeAgo(isoDate: string): string {
 
 export function ProjectList() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -102,6 +103,19 @@ export function ProjectList() {
     createMutation.mutate();
   }
 
+  function handleStatClick(label: string) {
+    if (label === "Projects") {
+      if (projects?.length === 1) {
+        navigate(`/projects/${projects[0].id}`);
+      } else {
+        document.getElementById("section-repos")?.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      const projectId = summary?.recent_reviews[0]?.project_id ?? projects?.[0]?.id;
+      if (projectId) navigate(`/projects/${projectId}/reviews`);
+    }
+  }
+
   return (
     <motion.div {...pageTransition}>
       <header className="dash-header">
@@ -115,25 +129,17 @@ export function ProjectList() {
       {summary && (
         <div className="stat-cards">
           {[
-            {
-              label: "Projects",
-              value: summary.total_projects,
-              sub: "repositories connected",
-            },
-            {
-              label: "Reviews",
-              value: summary.total_reviews,
-              sub: "AI reviews completed",
-            },
-            {
-              label: "Findings",
-              value: summary.total_findings,
-              sub: null,
-            },
+            { label: "Projects", value: summary.total_projects, sub: "repositories connected" },
+            { label: "Reviews",  value: summary.total_reviews,  sub: "AI reviews completed"  },
+            { label: "Findings", value: summary.total_findings, sub: null                    },
           ].map((card, i) => (
             <motion.div
               key={card.label}
               className="stat-card"
+              role="button"
+              tabIndex={0}
+              onClick={() => handleStatClick(card.label)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleStatClick(card.label); }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.28, delay: i * 0.06 }}
@@ -163,7 +169,7 @@ export function ProjectList() {
       )}
 
       <div className="dashboard-grid">
-        <section className="dashboard-main">
+        <section className="dashboard-main" id="section-activity">
           <div className="dash-section-header">
             <h2>Recent activity</h2>
             {summary && summary.recent_reviews.length > 0 && (
@@ -218,7 +224,7 @@ export function ProjectList() {
           )}
         </section>
 
-        <aside className="dashboard-side">
+        <aside className="dashboard-side" id="section-repos">
           <div className="dash-section-header">
             <h2>Repositories</h2>
             {!hasNoProjects && (
