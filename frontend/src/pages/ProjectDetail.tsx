@@ -4,6 +4,7 @@ import type { AxiosError } from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { listPullRequests, listReviews, triggerReview } from "../api/projects";
+import { BackButton } from "../components/BackButton";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
 import { useToast } from "../components/Toast";
@@ -54,6 +55,7 @@ export function ProjectDetail() {
 
   return (
     <motion.div {...pageTransition}>
+      <BackButton to="/projects" label="Dashboard" />
       <header className="page-header">
         <h1>Open pull requests</h1>
         <Link to={`/projects/${id}/reviews`}>View review history</Link>
@@ -128,9 +130,6 @@ export function ProjectDetail() {
         ))}
       </ul>
 
-      <p>
-        <Link to="/projects">Back to dashboard</Link>
-      </p>
     </motion.div>
   );
 }

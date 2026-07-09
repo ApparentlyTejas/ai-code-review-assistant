@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link, useParams } from "react-router-dom";
 import { getReview } from "../api/projects";
+import { BackButton } from "../components/BackButton";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
 import type { Finding } from "../types";
@@ -27,6 +28,7 @@ export function ReviewDetail() {
 
   return (
     <motion.div {...pageTransition}>
+      <BackButton to={`/projects/${id}/reviews`} label="Review history" />
       <header className="page-header">
         <h1>
           PR #{review.pr_number}: {review.pr_title}
@@ -72,9 +74,6 @@ export function ReviewDetail() {
         ))}
       </ul>
 
-      <p>
-        <Link to={`/projects/${id}`}>Back to pull requests</Link>
-      </p>
     </motion.div>
   );
 }

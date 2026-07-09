@@ -80,3 +80,11 @@ export function ChevronRightIcon({ size = 18 }: { size?: number }) {
     </svg>
   );
 }
+
+export function ChevronLeftIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg {...ICON_PROPS} width={size} height={size}>
+      <path d="m15 6-6 6 6 6" />
+    </svg>
+  );
+}
