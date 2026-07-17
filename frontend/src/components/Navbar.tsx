@@ -9,7 +9,7 @@ export function Navbar() {
     <nav className="navbar">
       <Link to="/" className="navbar-brand">
         <Logo size={26} />
-        AI Code Review
+        ReviewLens
       </Link>
       <div className="navbar-links">
         {user && <span>{user.email}</span>}

@@ -40,7 +40,7 @@ export function Login() {
   return (
     <motion.div className="auth-page" {...pageTransition}>
       <Link to="/" style={{ display: "block", marginBottom: 28, fontWeight: 600, color: "var(--text)" }}>
-        AI Code Review
+        ReviewLens
       </Link>
       {sessionExpired && (
         <p className="session-expired-banner">Your session expired. Please log in again.</p>
