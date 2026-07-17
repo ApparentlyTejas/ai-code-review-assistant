@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -8,8 +10,9 @@ from sqlalchemy.orm import Session
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings
-from app.core.database import get_db
+from app.core.database import Base, engine, get_db
 from app.core.limiter import limiter
+import app.models  # noqa: F401 — register models with Base before create_all
 from app.routers import auth, dashboard, projects, reviews
 
 
@@ -22,7 +25,13 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastAPI(title="AI Code Review Assistant")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    yield
+
+
+app = FastAPI(title="AI Code Review Assistant", lifespan=lifespan)
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

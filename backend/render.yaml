@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ai-code-review-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: PAT_ENCRYPTION_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
