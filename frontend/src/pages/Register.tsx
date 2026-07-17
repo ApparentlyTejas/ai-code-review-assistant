@@ -36,7 +36,7 @@ export function Register() {
   return (
     <motion.div className="auth-page" {...pageTransition}>
       <Link to="/" style={{ display: "block", marginBottom: 28, fontWeight: 600, color: "var(--text)" }}>
-        ReviewLens
+        ReviewLenzAI
       </Link>
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>

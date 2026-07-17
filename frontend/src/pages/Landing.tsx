@@ -28,7 +28,7 @@ export function Landing() {
       <nav className="landing-nav">
         <span className="landing-nav-brand">
           <Logo size={26} />
-          ReviewLens
+          ReviewLenzAI
         </span>
         <div className="landing-nav-center">
           <a href="#connect">Setup</a>
