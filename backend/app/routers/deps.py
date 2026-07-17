@@ -13,12 +13,13 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # Prefer HttpOnly cookie (browser); fall back to Authorization header (API clients / tests)
-    token = request.cookies.get("access_token")
+    # Prefer Authorization header (explicit token wins); fall back to HttpOnly cookie (browser)
+    token = None
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
     if not token:
-        auth_header = request.headers.get("Authorization", "")
-        if auth_header.startswith("Bearer "):
-            token = auth_header[7:]
+        token = request.cookies.get("access_token")
 
     if not token:
         raise credentials_exception

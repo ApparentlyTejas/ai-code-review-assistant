@@ -10,7 +10,7 @@ def test_register_success(client):
 def test_register_duplicate_email_rejected(client):
     client.post("/auth/register", json={"email": "dup@example.com", "password": "password123"})
     response = client.post("/auth/register", json={"email": "dup@example.com", "password": "password123"})
-    assert response.status_code == 400
+    assert response.status_code == 409
 
 
 def test_login_success_returns_token(client):
