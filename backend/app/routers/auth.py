@@ -11,10 +11,11 @@ from app.schemas.auth import TokenResponse, UserLogin, UserOut, UserRegister
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+_SAMESITE = "none" if settings.cookie_secure else "lax"
 _COOKIE_KWARGS = dict(
     httponly=True,
     secure=settings.cookie_secure,
-    samesite="lax",
+    samesite=_SAMESITE,
 )
 
 
@@ -44,14 +45,14 @@ def login(request: Request, response: Response, payload: UserLogin, db: Session 
     response.set_cookie(key="access_token", value=token, max_age=max_age, **_COOKIE_KWARGS)
     # Non-HttpOnly hint so the frontend can skip the /auth/me call when no session exists
     response.set_cookie(key="auth_hint", value="1", max_age=max_age, httponly=False,
-                        secure=settings.cookie_secure, samesite="lax")
+                        secure=settings.cookie_secure, samesite=_SAMESITE)
     return TokenResponse(access_token=token)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(response: Response) -> None:
     response.delete_cookie(key="access_token", **_COOKIE_KWARGS)
-    response.delete_cookie(key="auth_hint", httponly=False, secure=settings.cookie_secure, samesite="lax")
+    response.delete_cookie(key="auth_hint", httponly=False, secure=settings.cookie_secure, samesite=_SAMESITE)
 
 
 @router.get("/me", response_model=UserOut)
