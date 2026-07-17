@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://ai-code-review-api-00fw.onrender.com/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
