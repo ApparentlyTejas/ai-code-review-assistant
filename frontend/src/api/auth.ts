@@ -9,6 +9,10 @@ export async function verifyEmail(token: string): Promise<void> {
   await apiClient.get(`/auth/verify?token=${encodeURIComponent(token)}`);
 }
 
+export async function resendVerification(email: string): Promise<void> {
+  await apiClient.post("/auth/resend-verification", { email });
+}
+
 export async function loginUser(email: string, password: string): Promise<void> {
   await apiClient.post("/auth/login", { email, password });
 }

@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     cookie_secure: bool = False  # Set to True in production (HTTPS only)
 
     google_client_id: str = ""
-    resend_api_key: str = ""
-    resend_from_email: str = "ReviewLenzAI <onboarding@resend.dev>"
+    brevo_api_key: str = ""
+    brevo_from_email: str = "ReviewLenzAI <noreply@reviewlenzai.com>"
     app_url: str = "http://localhost:5173"
 
     @property

@@ -1,18 +1,22 @@
-import resend
+import httpx
 
 from app.core.config import settings
 
 
 def _send(to: str, subject: str, html: str) -> None:
-    if not settings.resend_api_key:
+    if not settings.brevo_api_key:
         return
-    resend.api_key = settings.resend_api_key
-    resend.Emails.send({
-        "from": settings.resend_from_email,
-        "to": [to],
-        "subject": subject,
-        "html": html,
-    })
+    httpx.post(
+        "https://api.brevo.com/v3/smtp/email",
+        headers={"api-key": settings.brevo_api_key, "content-type": "application/json"},
+        json={
+            "sender": {"email": "noreply@reviewlenzai.com", "name": "ReviewLenzAI"},
+            "to": [{"email": to}],
+            "subject": subject,
+            "htmlContent": html,
+        },
+        timeout=10,
+    )
 
 
 def send_verification_email(to: str, token: str) -> None:
@@ -28,7 +32,7 @@ def send_verification_email(to: str, token: str) -> None:
             This link expires in 24 hours.
           </p>
           <a href="{verify_url}"
-             style="display:inline-block;margin-top:24px;padding:12px 24px;background:#7c3aed;
+             style="display:inline-block;margin-top:24px;padding:12px 24px;background:#0071e3;
                     color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
             Verify email
           </a>
@@ -52,7 +56,7 @@ def send_welcome_email(to: str) -> None:
             and get structured AI code review findings ranked by severity — in seconds.
           </p>
           <a href="{settings.app_url}"
-             style="display:inline-block;margin-top:24px;padding:12px 24px;background:#7c3aed;
+             style="display:inline-block;margin-top:24px;padding:12px 24px;background:#0071e3;
                     color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
             Open ReviewLenzAI
           </a>
@@ -85,7 +89,7 @@ def send_review_ready_email(
             Found <strong>{findings_text}</strong>.
           </p>
           <a href="{review_url}"
-             style="display:inline-block;padding:12px 24px;background:#7c3aed;
+             style="display:inline-block;padding:12px 24px;background:#0071e3;
                     color:#fff;border-radius:8px;text-decoration:none;font-weight:600">
             View findings
           </a>

@@ -59,3 +59,7 @@ class TokenResponse(BaseModel):
 
 class RegisterResponse(BaseModel):
     message: str
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr

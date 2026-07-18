@@ -15,6 +15,5 @@ groq==0.15.0
 slowapi==0.1.9
 python-multipart==0.0.20
 google-auth==2.38.0
-resend==2.10.0
 pytest==8.3.4
 pytest-asyncio==0.25.0

@@ -11,7 +11,7 @@ from app.core.limiter import limiter
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
 from app.routers.deps import get_current_user
-from app.schemas.auth import RegisterResponse, TokenResponse, UserLogin, UserOut, UserRegister
+from app.schemas.auth import RegisterResponse, ResendVerificationRequest, TokenResponse, UserLogin, UserOut, UserRegister
 from app.services.email_service import send_verification_email, send_welcome_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -56,6 +56,21 @@ def register(request: Request, payload: UserRegister, db: Session = Depends(get_
         pass
 
     return RegisterResponse(message="Check your email for a verification link.")
+
+
+@router.post("/resend-verification", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("3/minute")
+def resend_verification(request: Request, payload: ResendVerificationRequest, db: Session = Depends(get_db)) -> None:
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user or user.is_verified:
+        return
+    token = secrets.token_urlsafe(32)
+    user.verification_token = token
+    db.commit()
+    try:
+        send_verification_email(user.email, token)
+    except Exception:
+        pass
 
 
 @router.get("/verify", response_model=TokenResponse)
