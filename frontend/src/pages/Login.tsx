@@ -5,6 +5,7 @@ import { useAuth } from "../auth/AuthContext";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { GoogleLoginButton } from "../components/GoogleLoginButton";
 import { Logo } from "../components/Logo";
+import { resendVerification } from "../api/auth";
 
 export function Login() {
   const { login, loginGoogle } = useAuth();
@@ -15,6 +16,8 @@ export function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionExpired, setSessionExpired] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [unverified, setUnverified] = useState(false);
+  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
 
   usePageTitle("Sign in");
 
@@ -34,13 +37,25 @@ export function Login() {
       navigate("/projects");
     } catch (err: any) {
       if (err?.response?.status === 403) {
-        setError("Please verify your email before signing in. Check your inbox.");
+        setUnverified(true);
+        setError("Please verify your email before signing in.");
       } else {
         setError("Invalid email or password.");
       }
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function handleResend() {
+    setResendStatus("sending");
+    try {
+      await resendVerification(email);
+    } catch {
+      // backend returns 204 regardless
+    }
+    setResendStatus("sent");
+    setTimeout(() => setResendStatus("idle"), 30_000);
   }
 
   async function handleGoogleSuccess(accessToken: string) {
@@ -108,6 +123,16 @@ export function Login() {
             </div>
           </label>
           {error && <p className="error">{error}</p>}
+          {unverified && (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendStatus !== "idle"}
+              style={{ width: "100%", background: "rgba(255,255,255,0.08)", color: resendStatus === "sent" ? "#34c759" : "rgba(255,255,255,0.7)", marginBottom: 4 }}
+            >
+              {resendStatus === "sending" ? "Sending…" : resendStatus === "sent" ? "Email sent!" : "Resend verification email"}
+            </button>
+          )}
           <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
             {isSubmitting ? "Signing in…" : "Sign in"}
           </button>
