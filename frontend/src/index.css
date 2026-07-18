@@ -145,6 +145,7 @@ h2 {
   color: var(--text-secondary);
 }
 
+/* VerifyEmail uses this simple centered layout */
 .auth-page {
   max-width: 400px;
   margin: 0 auto;
@@ -165,7 +166,7 @@ h2 {
   text-align: center;
   font-size: 15px;
   color: var(--text-secondary);
-  margin: 0 0 28px;
+  margin: 0 0 20px;
 }
 
 .auth-card {
@@ -174,22 +175,6 @@ h2 {
   border-radius: 18px;
   padding: 36px 32px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
-}
-
-.auth-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
-  text-decoration: none;
-  color: var(--text);
-}
-
-.auth-brand-name {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
 }
 
 .auth-page form,
@@ -1240,6 +1225,181 @@ pre {
   margin-bottom: 16px;
 }
 
+/* ---------- Auth split layout ---------- */
+
+.auth-split {
+  display: flex;
+  min-height: 100vh;
+}
+
+.auth-left {
+  flex: 0 0 52%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 52px 52px;
+  background: #07070a;
+  color: #fff;
+}
+
+.auth-left-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(0, 113, 227, 0.32) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(100, 40, 210, 0.16) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.auth-left-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+
+.auth-left-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.auth-left-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+}
+
+.auth-left-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2997ff;
+  margin-bottom: 16px;
+}
+
+.auth-left-body h2 {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 0 0 14px;
+  color: #f5f5f7;
+}
+
+.auth-left-body > p {
+  font-size: 15px;
+  color: #86868b;
+  line-height: 1.65;
+  margin: 0 0 36px;
+  max-width: 340px;
+}
+
+.auth-mock-card {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 18px 20px;
+  backdrop-filter: blur(8px);
+}
+
+.auth-mock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255, 59, 48, 0.18);
+  color: #ff6b6b;
+  border-radius: 5px;
+  padding: 3px 8px;
+  margin-bottom: 10px;
+}
+
+.auth-mock-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f5f7;
+  margin-bottom: 6px;
+}
+
+.auth-mock-desc {
+  font-size: 13px;
+  color: #86868b;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.auth-mock-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-mock-file {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #636366;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.auth-mock-fix {
+  font-size: 11px;
+  font-weight: 500;
+  color: #30d158;
+  letter-spacing: 0.01em;
+}
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 48px;
+  background: #fff;
+}
+
+.auth-form-box {
+  width: 100%;
+  max-width: 340px;
+}
+
+.auth-form-box h1 {
+  font-size: 26px;
+  margin: 0 0 4px;
+  text-align: left;
+}
+
+.auth-form-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+@media (max-width: 800px) {
+  .auth-left { display: none; }
+  .auth-right { padding: 40px 24px; }
+}
+
 /* ---------- Auth divider + Google button ---------- */
 
 .auth-divider {
@@ -1265,18 +1425,24 @@ pre {
   gap: 10px;
   width: 100%;
   padding: 11px 16px;
-  background: var(--bg);
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  transform: none;
 }
 .google-btn:hover:not(:disabled) {
-  background: var(--bg-subtle);
-  border-color: var(--text-secondary);
+  background: #fafafa;
+  border-color: #bbb;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  transform: none;
+}
+.google-btn:active:not(:disabled) {
+  transform: none;
 }
 
 /* ---------- Re-review confirmation ---------- */
