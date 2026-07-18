@@ -8,8 +8,8 @@ export function Logo({ size = 28 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id={gId} x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#5b21b6" />
+          <stop offset="0%" stopColor="#0071e3" />
+          <stop offset="100%" stopColor="#0055b3" />
         </linearGradient>
         {/* Dot grid pattern — same coords used for both dim background and bright lens fill */}
         <pattern id={pId} x="1" y="1" width="4" height="4" patternUnits="userSpaceOnUse">

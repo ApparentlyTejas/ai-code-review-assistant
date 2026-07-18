@@ -232,19 +232,27 @@ h2 {
   margin: 0 0 24px;
 }
 
+.auth-glass form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 0;
+  text-align: left;
+}
+
 .auth-dark input {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.13);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
 }
 
 .auth-dark input:focus {
-  border-color: rgba(0, 113, 227, 0.75);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.22);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(0, 113, 227, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.22) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
 }
 
-.auth-dark input::placeholder { color: rgba(255, 255, 255, 0.2); }
+.auth-dark input::placeholder { color: rgba(255, 255, 255, 0.22); }
 
 .auth-dark label { color: rgba(255, 255, 255, 0.55); }
 
@@ -1313,6 +1321,7 @@ pre {
   to {
     transform: rotate(360deg);
   }
+}
 
 /* ---------- Toast notifications ---------- */
 
@@ -1678,5 +1687,4 @@ pre {
   background: rgba(52, 199, 89, 0.15);
   color: #1b7e36;
   margin-left: 8px;
-}
 }
