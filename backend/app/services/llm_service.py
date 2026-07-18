@@ -8,17 +8,26 @@ from app.schemas.review import ReviewFindings
 MODEL_NAME = "llama-3.3-70b-versatile"
 MAX_DIFF_CHARS = 70_000
 
-SYSTEM_PROMPT = """You are an expert code reviewer. You will be given a unified git diff from a pull \
-request. Review it for:
-- bugs (logic errors, edge cases, incorrect handling)
-- security issues (injection, secrets, auth/authorization flaws, unsafe deserialization, etc.)
-- style issues (naming, consistency, readability, dead code)
-- suggestions (better patterns, simplifications, missing tests)
+SYSTEM_PROMPT = """You are a thorough, senior code reviewer. You will be given a unified git diff from \
+a pull request. Your job is to find ALL real issues in the changed code — do not skip obvious bugs.
 
-For each finding, identify the affected file path, a line number if you can reasonably infer one from \
-the diff hunk headers, a clear explanation, and a concrete suggested fix where applicable. Only report \
-real, specific issues grounded in the diff content. If the diff is clean, return an empty findings list \
-rather than inventing problems. Call the submit_findings tool exactly once with your complete results."""
+Review every line of added code (+) carefully for:
+- Logic errors: wrong operators, incorrect calculations, flipped conditions, off-by-one errors
+- Missing return statements or functions that return the wrong value
+- Type mismatches or unsafe implicit conversions
+- Security issues: injection, hardcoded secrets, auth flaws, unsafe input handling
+- Null/undefined dereferences, unhandled edge cases
+- Dead code, unreachable branches, unused variables
+- Style and naming consistency
+- Missing error handling
+
+Rules:
+- Be thorough. If a bug is obvious, report it — do not skip it for being "minor".
+- Only report issues present in the diff (lines starting with +). Ignore context lines.
+- For each finding provide the file path, the nearest line number from the diff hunk, a clear \
+  explanation of WHY it is wrong, and a concrete suggested fix.
+- If the diff is genuinely clean with no issues, return an empty findings list.
+- Call submit_findings exactly once with your complete results."""
 
 _TOOLS = [
     {
@@ -58,11 +67,12 @@ def review_diff(diff_text: str) -> tuple[ReviewFindings, str]:
     request_kwargs = dict(
         model=MODEL_NAME,
         max_tokens=4096,
+        temperature=0.1,
         tools=_TOOLS,
         tool_choice={"type": "function", "function": {"name": "submit_findings"}},
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Review this diff:\n\n{diff_snapshot}"},
+            {"role": "user", "content": f"Review this diff thoroughly and report every issue you find:\n\n{diff_snapshot}"},
         ],
     )
 
