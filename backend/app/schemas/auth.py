@@ -38,6 +38,25 @@ class UserRegister(BaseModel):
             raise ValueError("Disposable email addresses are not allowed.")
         return v
 
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        import re
+        errors = []
+        if len(v) < 8:
+            errors.append("at least 8 characters")
+        if not re.search(r"[A-Z]", v):
+            errors.append("one uppercase letter")
+        if not re.search(r"[a-z]", v):
+            errors.append("one lowercase letter")
+        if not re.search(r"[0-9]", v):
+            errors.append("one number")
+        if not re.search(r"[^A-Za-z0-9]", v):
+            errors.append("one special character")
+        if errors:
+            raise ValueError(f"Password must contain: {', '.join(errors)}.")
+        return v
+
 
 class UserLogin(BaseModel):
     email: EmailStr

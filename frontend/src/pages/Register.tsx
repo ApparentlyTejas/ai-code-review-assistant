@@ -6,6 +6,14 @@ import { useAuth } from "../auth/AuthContext";
 import { GoogleLoginButton } from "../components/GoogleLoginButton";
 import { Logo } from "../components/Logo";
 
+const checks = [
+  { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
+  { label: "One uppercase letter", test: (p: string) => /[A-Z]/.test(p) },
+  { label: "One lowercase letter", test: (p: string) => /[a-z]/.test(p) },
+  { label: "One number", test: (p: string) => /[0-9]/.test(p) },
+  { label: "One special character (!@#$...)", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
+];
+
 export function Register() {
   const { loginGoogle } = useAuth();
   const navigate = useNavigate();
@@ -14,9 +22,13 @@ export function Register() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const passwordValid = checks.every(c => c.test(password));
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (!passwordValid) return;
     setError(null);
     setIsSubmitting(true);
     try {
@@ -87,7 +99,16 @@ export function Register() {
           <label>
             Password
             <div style={{ position: "relative" }}>
-              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required autoComplete="new-password" style={{ width: "100%", paddingRight: 44 }} />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onFocus={() => setPasswordFocused(true)}
+                onBlur={() => setPasswordFocused(false)}
+                required
+                autoComplete="new-password"
+                style={{ width: "100%", paddingRight: 44 }}
+              />
               <button type="button" onClick={() => setShowPassword(p => !p)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", padding: 4, cursor: "pointer", color: "rgba(255,255,255,0.4)", width: "auto" }}>
                 {showPassword
                   ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -96,8 +117,23 @@ export function Register() {
               </button>
             </div>
           </label>
+
+          {(passwordFocused || password.length > 0) && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 5, margin: "6px 0 10px", padding: "10px 12px", background: "rgba(255,255,255,0.04)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)" }}>
+              {checks.map(c => {
+                const met = c.test(password);
+                return (
+                  <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: met ? "#34c759" : "rgba(255,255,255,0.35)" }}>
+                    <span style={{ fontSize: 10 }}>{met ? "✓" : "○"}</span>
+                    {c.label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
+          <button type="submit" disabled={isSubmitting || !passwordValid} style={{ width: "100%", marginTop: 4 }}>
             {isSubmitting ? "Creating account…" : "Create account"}
           </button>
         </form>
