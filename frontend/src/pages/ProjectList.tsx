@@ -82,15 +82,15 @@ export function ProjectList() {
   const [connectTab, setConnectTab] = useState<"github" | "manual">("github");
   const [selectedRepo, setSelectedRepo] = useState("");
 
+  const hasNoProjects = projects?.length === 0;
+  const isFormOpen = showConnectForm || hasNoProjects;
+
   const { data: githubRepos, isLoading: reposLoading } = useQuery({
     queryKey: ["github-repos"],
     queryFn: listGitHubRepos,
-    enabled: !!(user?.has_github && showConnectForm),
+    enabled: !!(user?.has_github && isFormOpen),
     staleTime: 60_000,
   });
-
-  const hasNoProjects = projects?.length === 0;
-  const isFormOpen = showConnectForm || hasNoProjects;
 
   const createMutation = useMutation({
     mutationFn: () => createProject(repoOwner, repoName, githubPat),
