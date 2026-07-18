@@ -6,8 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
-import { listGitHubRepos, createProjectFromGitHub, type GitHubRepo } from "../api/github";
+import { listGitHubRepos, createProjectFromGitHub } from "../api/github";
 import { GitHubLoginButton } from "../components/GitHubLoginButton";
+import { RepoPicker } from "../components/RepoPicker";
 import { ChevronRightIcon } from "../components/Icons";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
@@ -304,14 +305,11 @@ export function ProjectList() {
                     ) : (
                       <label>
                         Select a repository
-                        <select value={selectedRepo} onChange={(e) => setSelectedRepo(e.target.value)} required>
-                          <option value="">— choose a repo —</option>
-                          {githubRepos?.map((r: GitHubRepo) => (
-                            <option key={r.full_name} value={r.full_name}>
-                              {r.full_name}{r.private ? " 🔒" : ""}
-                            </option>
-                          ))}
-                        </select>
+                        <RepoPicker
+                          repos={githubRepos ?? []}
+                          value={selectedRepo}
+                          onChange={setSelectedRepo}
+                        />
                       </label>
                     )}
                     <button
