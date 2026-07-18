@@ -8,6 +8,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (accessToken: string) => Promise<void>;
   loginGitHub: (code: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
   logout: () => void;
 }
 
@@ -56,13 +57,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(currentUser);
   }
 
+  async function refreshUser() {
+    const currentUser = await getCurrentUser();
+    setUser(currentUser);
+  }
+
   function logout() {
     sessionStorage.removeItem("auth_active");
     logoutUser().catch(() => {});
     setUser(null);
   }
 
-  return <AuthContext.Provider value={{ user, isLoading, login, loginGoogle, loginGitHub, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, isLoading, login, loginGoogle, loginGitHub, refreshUser, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {

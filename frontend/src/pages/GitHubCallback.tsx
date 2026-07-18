@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { connectGitHub } from "../api/github";
+
 
 export function GitHubCallback() {
-  const { loginGitHub } = useAuth();
+  const { loginGitHub, refreshUser } = useAuth();
   const navigate = useNavigate();
   const called = useRef(false);
 
@@ -12,14 +14,24 @@ export function GitHubCallback() {
     called.current = true;
 
     const code = new URLSearchParams(window.location.search).get("code");
+    const intent = localStorage.getItem("github_oauth_intent") ?? "login";
+    localStorage.removeItem("github_oauth_intent");
+
     if (!code) {
       navigate("/login");
       return;
     }
 
-    loginGitHub(code)
-      .then(() => navigate("/projects"))
-      .catch(() => navigate("/login"));
+    if (intent === "connect") {
+      connectGitHub(code)
+        .then(() => refreshUser())
+        .then(() => navigate("/projects"))
+        .catch(() => navigate("/projects"));
+    } else {
+      loginGitHub(code)
+        .then(() => navigate("/projects"))
+        .catch(() => navigate("/login"));
+    }
   }, []);
 
   return (

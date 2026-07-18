@@ -12,6 +12,7 @@ from app.core.security import create_access_token, hash_password, verify_passwor
 from app.models.user import User
 from app.routers.deps import get_current_user
 from app.schemas.auth import RegisterResponse, ResendVerificationRequest, TokenResponse, UserLogin, UserOut, UserRegister
+from app.services.crypto_service import encrypt_pat, decrypt_pat
 from app.services.email_service import send_verification_email, send_welcome_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -134,15 +135,14 @@ def google_login(request: Request, response: Response, payload: GooglePayload, d
         db.commit()
         db.refresh(user)
 
-    token = create_access_token(subject=str(user.id))
-    _set_auth_cookies(response, token)
-
     if is_new:
         try:
             send_welcome_email(email)
         except Exception:
             pass
 
+    token = create_access_token(subject=str(user.id))
+    _set_auth_cookies(response, token)
     return TokenResponse(access_token=token)
 
 
@@ -197,11 +197,10 @@ def github_login(request: Request, response: Response, payload: GitHubPayload, d
     if is_new:
         user = User(email=email, hashed_password="", is_verified=True)
         db.add(user)
-        db.commit()
-        db.refresh(user)
 
-    token = create_access_token(subject=str(user.id))
-    _set_auth_cookies(response, token)
+    user.github_access_token = encrypt_pat(access_token)
+    db.commit()
+    db.refresh(user)
 
     if is_new:
         try:
@@ -209,7 +208,29 @@ def github_login(request: Request, response: Response, payload: GitHubPayload, d
         except Exception:
             pass
 
+    token = create_access_token(subject=str(user.id))
+    _set_auth_cookies(response, token)
     return TokenResponse(access_token=token)
+
+
+@router.post("/github/connect", status_code=status.HTTP_204_NO_CONTENT)
+@limiter.limit("10/minute")
+def github_connect(request: Request, payload: GitHubPayload, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> None:
+    if not settings.github_client_id or not settings.github_client_secret:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="GitHub login is not configured.")
+
+    token_r = httpx.post(
+        "https://github.com/login/oauth/access_token",
+        headers={"Accept": "application/json"},
+        json={"client_id": settings.github_client_id, "client_secret": settings.github_client_secret, "code": payload.code},
+        timeout=10,
+    )
+    access_token = token_r.json().get("access_token") if token_r.status_code == 200 else None
+    if not access_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid GitHub code.")
+
+    current_user.github_access_token = encrypt_pat(access_token)
+    db.commit()
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

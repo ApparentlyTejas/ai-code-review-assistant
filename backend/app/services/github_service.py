@@ -15,6 +15,29 @@ def _headers(pat: str, accept: str = "application/vnd.github+json") -> dict[str,
     return {"Authorization": f"Bearer {pat}", "Accept": accept, "X-GitHub-Api-Version": "2022-11-28"}
 
 
+def list_user_repos(pat: str) -> list[dict]:
+    repos: list[dict] = []
+    page = 1
+    while True:
+        response = httpx.get(
+            f"{GITHUB_API_BASE}/user/repos",
+            headers=_headers(pat),
+            params={"per_page": 100, "page": page, "sort": "pushed", "affiliation": "owner,collaborator"},
+            timeout=10,
+        )
+        if response.status_code == 401:
+            raise GitHubAuthError("GitHub token is invalid or expired")
+        response.raise_for_status()
+        batch = response.json()
+        if not batch:
+            break
+        repos.extend({"full_name": r["full_name"], "owner": r["owner"]["login"], "name": r["name"], "private": r["private"]} for r in batch)
+        if len(batch) < 100:
+            break
+        page += 1
+    return repos
+
+
 def validate_repo_access(pat: str, repo_owner: str, repo_name: str) -> None:
     url = f"{GITHUB_API_BASE}/repos/{repo_owner}/{repo_name}"
     response = httpx.get(url, headers=_headers(pat), timeout=10)

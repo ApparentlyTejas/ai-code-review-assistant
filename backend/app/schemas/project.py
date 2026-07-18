@@ -9,6 +9,11 @@ class ProjectCreate(BaseModel):
     github_pat: str = Field(min_length=1)
 
 
+class ProjectFromGitHub(BaseModel):
+    repo_owner: str = Field(min_length=1, max_length=255)
+    repo_name: str = Field(min_length=1, max_length=255)
+
+
 class ProjectOut(BaseModel):
     id: int
     repo_owner: str

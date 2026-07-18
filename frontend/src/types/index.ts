@@ -2,6 +2,7 @@ export interface User {
   id: number;
   email: string;
   created_at: string;
+  has_github: boolean;
 }
 
 export interface Project {

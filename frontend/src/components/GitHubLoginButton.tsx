@@ -11,31 +11,35 @@ function GitHubIcon() {
 
 interface Props {
   disabled?: boolean;
+  intent?: "login" | "connect";
+  label?: string;
+  className?: string;
 }
 
-export function GitHubLoginButton({ disabled }: Props) {
+export function GitHubLoginButton({ disabled, intent = "login", label, className = "github-btn-dark" }: Props) {
   if (!GITHUB_CLIENT_ID) {
     if (!import.meta.env.DEV) return null;
     return (
-      <button className="github-btn-dark" type="button" disabled title="Set VITE_GITHUB_CLIENT_ID to enable">
+      <button className={className} type="button" disabled title="Set VITE_GITHUB_CLIENT_ID to enable">
         <GitHubIcon />
-        Continue with GitHub
+        {label ?? "Continue with GitHub"}
       </button>
     );
   }
 
   function handleClick() {
+    localStorage.setItem("github_oauth_intent", intent);
     const url = new URL("https://github.com/login/oauth/authorize");
     url.searchParams.set("client_id", GITHUB_CLIENT_ID);
-    url.searchParams.set("scope", "user:email");
+    url.searchParams.set("scope", "user:email,repo");
     url.searchParams.set("redirect_uri", CALLBACK_URL);
     window.location.href = url.toString();
   }
 
   return (
-    <button className="github-btn-dark" type="button" onClick={handleClick} disabled={disabled}>
+    <button className={className} type="button" onClick={handleClick} disabled={disabled}>
       <GitHubIcon />
-      Continue with GitHub
+      {label ?? "Continue with GitHub"}
     </button>
   );
 }

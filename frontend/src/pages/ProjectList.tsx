@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDashboardSummary } from "../api/dashboard";
 import { createProject, listProjects } from "../api/projects";
+import { listGitHubRepos, createProjectFromGitHub, type GitHubRepo } from "../api/github";
+import { GitHubLoginButton } from "../components/GitHubLoginButton";
 import { ChevronRightIcon } from "../components/Icons";
 import { pageTransition } from "../components/pageTransition";
 import { Spinner } from "../components/Spinner";
@@ -77,6 +79,15 @@ export function ProjectList() {
   const [repoName, setRepoName] = useState("");
   const [githubPat, setGithubPat] = useState("");
   const [showConnectForm, setShowConnectForm] = useState(false);
+  const [connectTab, setConnectTab] = useState<"github" | "manual">("github");
+  const [selectedRepo, setSelectedRepo] = useState("");
+
+  const { data: githubRepos, isLoading: reposLoading } = useQuery({
+    queryKey: ["github-repos"],
+    queryFn: listGitHubRepos,
+    enabled: !!(user?.has_github && showConnectForm),
+    staleTime: 60_000,
+  });
 
   const hasNoProjects = projects?.length === 0;
   const isFormOpen = showConnectForm || hasNoProjects;
@@ -94,6 +105,24 @@ export function ProjectList() {
     },
     onError: (err: AxiosError<{ detail: string }>) => {
       const detail = err.response?.data?.detail ?? "Failed to connect repo. Check the token and repo name.";
+      toast(detail, "error");
+    },
+  });
+
+  const githubCreateMutation = useMutation({
+    mutationFn: () => {
+      const [owner, name] = selectedRepo.split("/");
+      return createProjectFromGitHub(owner, name);
+    },
+    onSuccess: (project) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] });
+      setSelectedRepo("");
+      setShowConnectForm(false);
+      navigate(`/projects/${project.id}`);
+    },
+    onError: (err: AxiosError<{ detail: string }>) => {
+      const detail = err.response?.data?.detail ?? "Failed to connect repo.";
       toast(detail, "error");
     },
   });
@@ -240,46 +269,105 @@ export function ProjectList() {
 
           <AnimatePresence initial={false}>
             {isFormOpen && (
-              <motion.form
-                onSubmit={handleSubmit}
+              <motion.div
                 className="connect-repo-form"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                <label>
-                  Repo owner
-                  <input
-                    value={repoOwner}
-                    onChange={(e) => setRepoOwner(e.target.value)}
-                    placeholder="e.g. octocat"
-                    required
-                  />
-                </label>
-                <label>
-                  Repo name
-                  <input
-                    value={repoName}
-                    onChange={(e) => setRepoName(e.target.value)}
-                    placeholder="e.g. Hello-World"
-                    required
-                  />
-                </label>
-                <label>
-                  GitHub personal access token
-                  <input
-                    type="password"
-                    value={githubPat}
-                    onChange={(e) => setGithubPat(e.target.value)}
-                    placeholder="ghp_..."
-                    required
-                  />
-                </label>
-                <button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Connecting..." : "Connect repository"}
-                </button>
-              </motion.form>
+                {user?.has_github && (
+                  <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                    <button
+                      type="button"
+                      className={connectTab === "github" ? "" : "secondary small"}
+                      style={{ flex: 1, fontSize: 13 }}
+                      onClick={() => setConnectTab("github")}
+                    >
+                      Browse repos
+                    </button>
+                    <button
+                      type="button"
+                      className={connectTab === "manual" ? "" : "secondary small"}
+                      style={{ flex: 1, fontSize: 13 }}
+                      onClick={() => setConnectTab("manual")}
+                    >
+                      Manual (PAT)
+                    </button>
+                  </div>
+                )}
+
+                {(connectTab === "github" && user?.has_github) ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {reposLoading ? (
+                      <p style={{ fontSize: 13, color: "var(--text-muted)" }}>Loading your repos…</p>
+                    ) : (
+                      <label>
+                        Select a repository
+                        <select value={selectedRepo} onChange={(e) => setSelectedRepo(e.target.value)} required>
+                          <option value="">— choose a repo —</option>
+                          {githubRepos?.map((r: GitHubRepo) => (
+                            <option key={r.full_name} value={r.full_name}>
+                              {r.full_name}{r.private ? " 🔒" : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                    <button
+                      type="button"
+                      disabled={!selectedRepo || githubCreateMutation.isPending}
+                      onClick={() => githubCreateMutation.mutate()}
+                    >
+                      {githubCreateMutation.isPending ? "Connecting…" : "Connect repository"}
+                    </button>
+                  </div>
+                ) : !user?.has_github ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
+                      Connect your GitHub account to browse repos, or add manually with a PAT.
+                    </p>
+                    <GitHubLoginButton intent="connect" label="Connect GitHub account" />
+                    <div style={{ borderTop: "1px solid var(--border)", paddingTop: 10 }}>
+                      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        <label>
+                          Repo owner
+                          <input value={repoOwner} onChange={(e) => setRepoOwner(e.target.value)} placeholder="e.g. octocat" required />
+                        </label>
+                        <label>
+                          Repo name
+                          <input value={repoName} onChange={(e) => setRepoName(e.target.value)} placeholder="e.g. Hello-World" required />
+                        </label>
+                        <label>
+                          GitHub personal access token
+                          <input type="password" value={githubPat} onChange={(e) => setGithubPat(e.target.value)} placeholder="ghp_..." required />
+                        </label>
+                        <button type="submit" disabled={createMutation.isPending}>
+                          {createMutation.isPending ? "Connecting..." : "Connect repository"}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <label>
+                      Repo owner
+                      <input value={repoOwner} onChange={(e) => setRepoOwner(e.target.value)} placeholder="e.g. octocat" required />
+                    </label>
+                    <label>
+                      Repo name
+                      <input value={repoName} onChange={(e) => setRepoName(e.target.value)} placeholder="e.g. Hello-World" required />
+                    </label>
+                    <label>
+                      GitHub personal access token
+                      <input type="password" value={githubPat} onChange={(e) => setGithubPat(e.target.value)} placeholder="ghp_..." required />
+                    </label>
+                    <button type="submit" disabled={createMutation.isPending}>
+                      {createMutation.isPending ? "Connecting..." : "Connect repository"}
+                    </button>
+                  </form>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
 

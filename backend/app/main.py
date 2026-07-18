@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.database import Base, engine, get_db
 from app.core.limiter import limiter
 import app.models  # noqa: F401 — register models with Base before create_all
-from app.routers import auth, dashboard, projects, reviews
+from app.routers import auth, dashboard, github, projects, reviews
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -36,6 +36,9 @@ async def lifespan(app: FastAPI):
         conn.execute(text(
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token VARCHAR(64)"
         ))
+        conn.execute(text(
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS github_access_token VARCHAR(512)"
+        ))
         conn.commit()
     yield
 
@@ -56,6 +59,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(github.router)
 app.include_router(projects.router)
 app.include_router(reviews.router)
 app.include_router(dashboard.router)
