@@ -1,17 +1,17 @@
 :root {
-  --text: #1a1a17;
-  --text-secondary: #6b6b66;
-  --text-on-dark: #f0efe9;
-  --text-on-dark-secondary: #9a9a92;
-  --bg: #faf9f7;
-  --bg-subtle: #f0eeeb;
-  --bg-dark: #0f0f0d;
-  --border: #d8d6d0;
-  --border-on-dark: #3a3a36;
-  --code-bg: #f0eeeb;
-  --accent: #7c3aed;
-  --accent-dark-bg: #a78bfa;
-  --danger: #c0392b;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-on-dark: #f5f5f7;
+  --text-on-dark-secondary: #a1a1a6;
+  --bg: #ffffff;
+  --bg-subtle: #f5f5f7;
+  --bg-dark: #000000;
+  --border: #d2d2d7;
+  --border-on-dark: #3a3a3c;
+  --code-bg: #f5f5f7;
+  --accent: #0071e3;
+  --accent-dark-bg: #2997ff;
+  --danger: #ff3b30;
 
   --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
@@ -33,8 +33,7 @@ html {
 
 body {
   margin: 0;
-  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background: var(--bg-subtle);
 }
 
 a {
@@ -59,7 +58,7 @@ a {
   align-items: center;
   padding: 0 22px;
   height: 52px;
-  background: rgba(250, 249, 247, 0.88);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -147,21 +146,58 @@ h2 {
 }
 
 .auth-page {
-  max-width: 380px;
-  margin: 90px auto;
-  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 24px;
 }
 
 .auth-page h1 {
+  font-size: 28px;
   text-align: center;
+  margin-bottom: 6px;
+}
+
+.auth-page-subtitle {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+.auth-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 36px 32px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+}
+
+.auth-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.auth-brand-name {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .auth-page form,
 .connect-repo-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
   text-align: left;
 }
 
@@ -196,7 +232,7 @@ input {
 input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
 }
 
 button {
@@ -213,7 +249,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #6d28d9;
+  background: #0077ed;
   transform: translateY(-1px);
 }
 
@@ -710,7 +746,7 @@ pre {
   align-items: center;
   padding: 0 32px;
   height: 56px;
-  background: rgba(250, 249, 247, 0.88);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -785,7 +821,7 @@ pre {
 .hero-glow {
   position: absolute;
   inset: -20%;
-  background: radial-gradient(ellipse at 40% 50%, rgba(124, 58, 237, 0.2), transparent 55%);
+  background: radial-gradient(ellipse at 40% 50%, rgba(0, 113, 227, 0.18), transparent 55%);
   pointer-events: none;
 }
 

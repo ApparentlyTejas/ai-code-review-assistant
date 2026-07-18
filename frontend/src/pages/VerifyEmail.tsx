@@ -38,35 +38,34 @@ export function VerifyEmail() {
 
   return (
     <motion.div className="auth-page" {...pageTransition}>
-      <Link to="/" style={{ display: "block", marginBottom: 28, fontWeight: 600, color: "var(--text)" }}>
-        ReviewLenzAI
-      </Link>
+      <div className="auth-card" style={{ textAlign: "center" }}>
+        {state === "verifying" && (
+          <>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>⏳</div>
+            <h1>Verifying…</h1>
+            <p className="auth-page-subtitle" style={{ marginBottom: 0 }}>Just a moment while we confirm your email.</p>
+          </>
+        )}
 
-      {state === "verifying" && (
-        <>
-          <h1>Verifying…</h1>
-          <p style={{ color: "var(--text-muted)" }}>Just a moment while we confirm your email.</p>
-        </>
-      )}
+        {state === "success" && (
+          <>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>✅</div>
+            <h1>Email verified!</h1>
+            <p className="auth-page-subtitle" style={{ marginBottom: 0 }}>Your account is active. Taking you to your projects…</p>
+          </>
+        )}
 
-      {state === "success" && (
-        <>
-          <h1>Email verified!</h1>
-          <p style={{ color: "var(--text-muted)", lineHeight: 1.6 }}>
-            Your account is active. Taking you to your projects…
-          </p>
-        </>
-      )}
-
-      {state === "error" && (
-        <>
-          <h1>Verification failed</h1>
-          <p style={{ color: "var(--text-muted)", lineHeight: 1.6, marginBottom: 24 }}>{errorMsg}</p>
-          <Link to="/register">Register again</Link>
-          {" · "}
-          <Link to="/login">Log in</Link>
-        </>
-      )}
+        {state === "error" && (
+          <>
+            <div style={{ fontSize: 40, marginBottom: 16 }}>❌</div>
+            <h1>Verification failed</h1>
+            <p className="auth-page-subtitle">{errorMsg}</p>
+            <Link to="/register">Register again</Link>
+            {" · "}
+            <Link to="/login">Sign in</Link>
+          </>
+        )}
+      </div>
     </motion.div>
   );
 }
