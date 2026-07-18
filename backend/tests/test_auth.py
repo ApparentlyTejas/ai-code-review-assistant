@@ -1,8 +1,10 @@
 from tests.conftest import create_verified_user, register_and_login
 
+STRONG_PASSWORD = "Password123!"
+
 
 def test_register_success(client):
-    response = client.post("/auth/register", json={"email": "a@example.com", "password": "password123"})
+    response = client.post("/auth/register", json={"email": "a@example.com", "password": STRONG_PASSWORD})
     assert response.status_code == 201
     body = response.json()
     assert "message" in body
@@ -10,9 +12,14 @@ def test_register_success(client):
     assert "password" not in body
 
 
+def test_register_weak_password_rejected(client):
+    response = client.post("/auth/register", json={"email": "weak@example.com", "password": "password123"})
+    assert response.status_code == 422
+
+
 def test_register_duplicate_email_rejected(client):
-    client.post("/auth/register", json={"email": "dup@example.com", "password": "password123"})
-    response = client.post("/auth/register", json={"email": "dup@example.com", "password": "password123"})
+    client.post("/auth/register", json={"email": "dup@example.com", "password": STRONG_PASSWORD})
+    response = client.post("/auth/register", json={"email": "dup@example.com", "password": STRONG_PASSWORD})
     assert response.status_code == 409
 
 
@@ -23,10 +30,11 @@ def test_login_success_returns_token(client):
     assert "access_token" in response.json()
 
 
-def test_login_unverified_user_rejected(client):
-    client.post("/auth/register", json={"email": "unverified@example.com", "password": "password123"})
-    response = client.post("/auth/login", json={"email": "unverified@example.com", "password": "password123"})
-    assert response.status_code == 403
+def test_register_auto_verifies_user(client):
+    client.post("/auth/register", json={"email": "autoverify@example.com", "password": STRONG_PASSWORD})
+    response = client.post("/auth/login", json={"email": "autoverify@example.com", "password": STRONG_PASSWORD})
+    assert response.status_code == 200
+    assert "access_token" in response.json()
 
 
 def test_login_wrong_password_rejected(client):
@@ -55,21 +63,6 @@ def test_me_with_valid_token_returns_user(client):
     response = client.get("/auth/me", headers=headers)
     assert response.status_code == 200
     assert response.json()["email"] == "me@example.com"
-
-
-def test_verify_email_success(client):
-    from tests.conftest import TestingSessionLocal
-    from app.models.user import User as UserModel
-
-    client.post("/auth/register", json={"email": "verify@example.com", "password": "password123"})
-    db = TestingSessionLocal()
-    user = db.query(UserModel).filter(UserModel.email == "verify@example.com").first()
-    token = user.verification_token
-    db.close()
-
-    response = client.get(f"/auth/verify?token={token}")
-    assert response.status_code == 200
-    assert "access_token" in response.json()
 
 
 def test_verify_email_invalid_token(client):
