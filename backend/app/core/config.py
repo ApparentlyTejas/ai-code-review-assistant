@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     google_client_id: str = ""
     brevo_api_key: str = ""
-    brevo_from_email: str = "ReviewLenzAI <noreply@reviewlenzai.com>"
+    brevo_from_email: str = "reviewlenzai@gmail.com"
     app_url: str = "http://localhost:5173"
 
     @property

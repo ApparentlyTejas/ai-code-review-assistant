@@ -10,7 +10,7 @@ def _send(to: str, subject: str, html: str) -> None:
         "https://api.brevo.com/v3/smtp/email",
         headers={"api-key": settings.brevo_api_key, "content-type": "application/json"},
         json={
-            "sender": {"email": "noreply@reviewlenzai.com", "name": "ReviewLenzAI"},
+            "sender": {"email": settings.brevo_from_email, "name": "ReviewLenzAI"},
             "to": [{"email": to}],
             "subject": subject,
             "htmlContent": html,
