@@ -14,14 +14,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const LogoMark = () => (
-  <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-    <rect width="40" height="40" rx="9" fill="#fff" fillOpacity="0.12" />
-    <path d="M12 28L20 12L28 28" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M14.5 23H25.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-  </svg>
-);
-
 export function Login() {
   const { login, loginGoogle } = useAuth();
   const navigate = useNavigate();
@@ -75,81 +67,61 @@ export function Login() {
   });
 
   return (
-    <div className="auth-split">
-      {/* ── Left panel ── */}
-      <div className="auth-left">
-        <div className="auth-left-bg" />
-        <div className="auth-left-dots" />
+    <div className="auth-dark">
+      <div className="auth-glow-1" />
+      <div className="auth-glow-2" />
+      <div className="auth-glow-3" />
 
-        <Link to="/" className="auth-left-brand">
-          <LogoMark />
+      <motion.div
+        className="auth-glass"
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <Link to="/" className="auth-glass-brand">
+          <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="9" fill="rgba(255,255,255,0.12)" />
+            <path d="M12 28L20 12L28 28" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M14.5 23H25.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
           ReviewLenzAI
         </Link>
 
-        <div className="auth-left-body">
-          <p className="auth-left-eyebrow">AI Code Review</p>
-          <h2>Ship better code,<br />faster.</h2>
-          <p>
-            Catch bugs, security issues, and code smells before they reach
-            production — in seconds, not hours.
+        <h1>Welcome back</h1>
+        <p className="auth-dark-sub">Sign in to your account</p>
+
+        {sessionExpired && (
+          <p className="session-expired-banner" style={{ marginBottom: 16 }}>
+            Your session expired. Please sign in again.
           </p>
+        )}
 
-          <div className="auth-mock-card">
-            <div className="auth-mock-badge">● Critical · Security</div>
-            <div className="auth-mock-title">SQL Injection detected</div>
-            <div className="auth-mock-desc">
-              User input on line 42 is concatenated into a raw SQL query without
-              sanitization. An attacker can exfiltrate or modify any row.
-            </div>
-            <div className="auth-mock-footer">
-              <span className="auth-mock-file">auth/database.py:42</span>
-              <span className="auth-mock-fix">+ Fix suggestion →</span>
-            </div>
-          </div>
-        </div>
-      </div>
+        <button className="google-btn-dark" type="button" disabled={isSubmitting} onClick={() => handleGoogle()}>
+          <GoogleIcon />
+          Continue with Google
+        </button>
 
-      {/* ── Right panel ── */}
-      <motion.div
-        className="auth-right"
-        initial={{ opacity: 0, x: 18 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-      >
-        <div className="auth-form-box">
-          <h1>Welcome back</h1>
-          <p className="auth-form-subtitle">Sign in to your account</p>
+        <div className="auth-divider auth-dark"><span>or</span></div>
 
-          {sessionExpired && (
-            <p className="session-expired-banner">Your session expired. Please sign in again.</p>
-          )}
-
-          <button className="google-btn" type="button" disabled={isSubmitting} onClick={() => handleGoogle()}>
-            <GoogleIcon />
-            Continue with Google
+        <form onSubmit={handleSubmit} style={{ marginBottom: 0 }}>
+          <label>
+            Email
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          </label>
+          <label>
+            Password
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+          </label>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
+            {isSubmitting ? "Signing in…" : "Sign in"}
           </button>
+        </form>
 
-          <div className="auth-divider"><span>or</span></div>
-
-          <form onSubmit={handleSubmit}>
-            <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-            </label>
-            <label>
-              Password
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
-            </label>
-            {error && <p className="error">{error}</p>}
-            <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
-              {isSubmitting ? "Signing in…" : "Sign in"}
-            </button>
-          </form>
-
-          <p style={{ fontSize: 14, color: "var(--text-secondary)", margin: "20px 0 0", textAlign: "center" }}>
-            No account? <Link to="/register">Create one</Link>
-          </p>
-        </div>
+        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(255,255,255,0.35)", margin: "20px 0 0" }}>
+          No account?{" "}
+          <Link to="/register" style={{ color: "rgba(255,255,255,0.75)" }}>Create one</Link>
+        </p>
       </motion.div>
     </div>
   );

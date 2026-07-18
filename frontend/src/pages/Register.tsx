@@ -14,14 +14,6 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const LogoMark = () => (
-  <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-    <rect width="40" height="40" rx="9" fill="#fff" fillOpacity="0.12" />
-    <path d="M12 28L20 12L28 28" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M14.5 23H25.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-  </svg>
-);
-
 export function Register() {
   const { loginGoogle } = useAuth();
   const navigate = useNavigate();
@@ -72,110 +64,81 @@ export function Register() {
 
   if (submitted) {
     return (
-      <div className="auth-split">
-        <div className="auth-left">
-          <div className="auth-left-bg" />
-          <div className="auth-left-dots" />
-          <Link to="/" className="auth-left-brand"><LogoMark /> ReviewLenzAI</Link>
-          <div className="auth-left-body">
-            <p className="auth-left-eyebrow">AI Code Review</p>
-            <h2>One step away.</h2>
-            <p>Verify your email to activate your account and start reviewing code with AI.</p>
-          </div>
-        </div>
+      <div className="auth-dark">
+        <div className="auth-glow-1" />
+        <div className="auth-glow-2" />
         <motion.div
-          className="auth-right"
-          initial={{ opacity: 0, x: 18 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="auth-glass"
+          style={{ textAlign: "center" }}
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <div className="auth-form-box" style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 48, marginBottom: 20 }}>📬</div>
-            <h1>Check your inbox</h1>
-            <p style={{ color: "var(--text-secondary)", lineHeight: 1.6, marginTop: 8 }}>
-              We sent a verification link to<br /><strong style={{ color: "var(--text)" }}>{email}</strong>
-            </p>
-            <p style={{ fontSize: 14, color: "var(--text-secondary)", marginTop: 32 }}>
-              Already verified? <Link to="/login">Sign in</Link>
-            </p>
-          </div>
+          <div style={{ fontSize: 48, marginBottom: 18 }}>📬</div>
+          <h1>Check your inbox</h1>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.65, margin: "8px 0 28px" }}>
+            We sent a verification link to<br />
+            <span style={{ color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{email}</span>
+          </p>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.3)" }}>
+            Already verified?{" "}
+            <Link to="/login" style={{ color: "rgba(255,255,255,0.65)" }}>Sign in</Link>
+          </p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="auth-split">
-      {/* ── Left panel ── */}
-      <div className="auth-left">
-        <div className="auth-left-bg" />
-        <div className="auth-left-dots" />
+    <div className="auth-dark">
+      <div className="auth-glow-1" />
+      <div className="auth-glow-2" />
+      <div className="auth-glow-3" />
 
-        <Link to="/" className="auth-left-brand">
-          <LogoMark />
+      <motion.div
+        className="auth-glass"
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <Link to="/" className="auth-glass-brand">
+          <svg width="26" height="26" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="9" fill="rgba(255,255,255,0.12)" />
+            <path d="M12 28L20 12L28 28" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M14.5 23H25.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
           ReviewLenzAI
         </Link>
 
-        <div className="auth-left-body">
-          <p className="auth-left-eyebrow">AI Code Review</p>
-          <h2>Ship better code,<br />faster.</h2>
-          <p>
-            Catch bugs, security issues, and code smells before they reach
-            production — in seconds, not hours.
-          </p>
+        <h1>Create account</h1>
+        <p className="auth-dark-sub">Start reviewing code with AI</p>
 
-          <div className="auth-mock-card">
-            <div className="auth-mock-badge">● Critical · Security</div>
-            <div className="auth-mock-title">SQL Injection detected</div>
-            <div className="auth-mock-desc">
-              User input on line 42 is concatenated into a raw SQL query without
-              sanitization. An attacker can exfiltrate or modify any row.
-            </div>
-            <div className="auth-mock-footer">
-              <span className="auth-mock-file">auth/database.py:42</span>
-              <span className="auth-mock-fix">+ Fix suggestion →</span>
-            </div>
-          </div>
-        </div>
-      </div>
+        <button className="google-btn-dark" type="button" disabled={isSubmitting} onClick={() => handleGoogle()}>
+          <GoogleIcon />
+          Continue with Google
+        </button>
 
-      {/* ── Right panel ── */}
-      <motion.div
-        className="auth-right"
-        initial={{ opacity: 0, x: 18 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-      >
-        <div className="auth-form-box">
-          <h1>Create account</h1>
-          <p className="auth-form-subtitle">Start reviewing code with AI</p>
+        <div className="auth-divider auth-dark"><span>or</span></div>
 
-          <button className="google-btn" type="button" disabled={isSubmitting} onClick={() => handleGoogle()}>
-            <GoogleIcon />
-            Continue with Google
+        <form onSubmit={handleSubmit} style={{ marginBottom: 0 }}>
+          <label>
+            Email
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+          </label>
+          <label>
+            Password
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required autoComplete="new-password" />
+          </label>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
+            {isSubmitting ? "Creating account…" : "Create account"}
           </button>
+        </form>
 
-          <div className="auth-divider"><span>or</span></div>
-
-          <form onSubmit={handleSubmit}>
-            <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-            </label>
-            <label>
-              Password <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(min. 8 characters)</span>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required autoComplete="new-password" />
-            </label>
-            {error && <p className="error">{error}</p>}
-            <button type="submit" disabled={isSubmitting} style={{ width: "100%", marginTop: 4 }}>
-              {isSubmitting ? "Creating account…" : "Create account"}
-            </button>
-          </form>
-
-          <p style={{ fontSize: 14, color: "var(--text-secondary)", margin: "20px 0 0", textAlign: "center" }}>
-            Already have an account? <Link to="/login">Sign in</Link>
-          </p>
-        </div>
+        <p style={{ textAlign: "center", fontSize: 14, color: "rgba(255,255,255,0.35)", margin: "20px 0 0" }}>
+          Already have an account?{" "}
+          <Link to="/login" style={{ color: "rgba(255,255,255,0.75)" }}>Sign in</Link>
+        </p>
       </motion.div>
     </div>
   );

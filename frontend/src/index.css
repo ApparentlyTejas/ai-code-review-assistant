@@ -145,6 +145,145 @@ h2 {
   color: var(--text-secondary);
 }
 
+/* ---------- Dark auth page (Login / Register) ---------- */
+
+.auth-dark {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #07070f;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.auth-glow-1 {
+  position: absolute;
+  width: 700px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.38) 0%, transparent 65%);
+  top: -220px;
+  left: -160px;
+  pointer-events: none;
+}
+
+.auth-glow-2 {
+  position: absolute;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120, 40, 220, 0.28) 0%, transparent 65%);
+  bottom: -140px;
+  right: -120px;
+  pointer-events: none;
+}
+
+.auth-glow-3 {
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 210, 190, 0.1) 0%, transparent 65%);
+  bottom: 60px;
+  left: 60px;
+  pointer-events: none;
+}
+
+.auth-glass {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 24px;
+  padding: 40px 36px;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+.auth-glass-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 28px;
+  text-decoration: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.auth-glass h1 {
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.auth-dark-sub {
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 24px;
+}
+
+.auth-dark input {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.13);
+  color: #fff;
+}
+
+.auth-dark input:focus {
+  border-color: rgba(0, 113, 227, 0.75);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.22);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.auth-dark input::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+.auth-dark label { color: rgba(255, 255, 255, 0.55); }
+
+.auth-dark .auth-divider { color: rgba(255, 255, 255, 0.28); }
+.auth-dark .auth-divider::before,
+.auth-dark .auth-divider::after { background: rgba(255, 255, 255, 0.1); }
+
+.auth-dark .error { color: #ff6b6b; }
+
+.auth-dark .session-expired-banner {
+  background: rgba(212, 160, 23, 0.12);
+  border-color: rgba(212, 160, 23, 0.3);
+  color: #ffd060;
+}
+
+.google-btn-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.google-btn-dark:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.24);
+  transform: none;
+}
+.google-btn-dark:disabled { opacity: 0.45; cursor: default; transform: none; }
+
 /* VerifyEmail uses this simple centered layout */
 .auth-page {
   max-width: 400px;
