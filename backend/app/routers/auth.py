@@ -40,22 +40,20 @@ def register(request: Request, payload: UserRegister, db: Session = Depends(get_
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An account with this email already exists.")
 
-    token = secrets.token_urlsafe(32)
     user = User(
         email=payload.email,
         hashed_password=hash_password(payload.password),
-        is_verified=False,
-        verification_token=token,
+        is_verified=True,
     )
     db.add(user)
     db.commit()
 
     try:
-        send_verification_email(user.email, token)
+        send_welcome_email(user.email)
     except Exception:
         pass
 
-    return RegisterResponse(message="Check your email for a verification link.")
+    return RegisterResponse(message="Account created! You can now sign in.")
 
 
 @router.post("/resend-verification", status_code=status.HTTP_204_NO_CONTENT)

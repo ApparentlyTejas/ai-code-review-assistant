@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser, resendVerification } from "../api/auth";
+import { registerUser } from "../api/auth";
 import { useAuth } from "../auth/AuthContext";
 import { GoogleLoginButton } from "../components/GoogleLoginButton";
 import { Logo } from "../components/Logo";
@@ -13,9 +13,7 @@ export function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [resendStatus, setResendStatus] = useState<"idle" | "sending" | "sent">("idle");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -23,7 +21,7 @@ export function Register() {
     setIsSubmitting(true);
     try {
       await registerUser(email, password);
-      setSubmitted(true);
+      navigate("/login");
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 409) {
@@ -51,52 +49,6 @@ export function Register() {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  async function handleResend() {
-    setResendStatus("sending");
-    try {
-      await resendVerification(email);
-    } catch {
-      // silently fail — backend returns 204 regardless
-    }
-    setResendStatus("sent");
-    setTimeout(() => setResendStatus("idle"), 30_000);
-  }
-
-  if (submitted) {
-    return (
-      <div className="auth-dark">
-        <div className="auth-glow-1" />
-        <div className="auth-glow-2" />
-        <motion.div
-          className="auth-glass"
-          style={{ textAlign: "center" }}
-          initial={{ opacity: 0, y: 24, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-        >
-          <div style={{ fontSize: 48, marginBottom: 18 }}>📬</div>
-          <h1>Check your inbox</h1>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.65, margin: "8px 0 20px" }}>
-            We sent a verification link to<br />
-            <span style={{ color: "rgba(255,255,255,0.8)", fontWeight: 500 }}>{email}</span>
-          </p>
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={resendStatus !== "idle"}
-            style={{ width: "100%", marginBottom: 16, background: "rgba(255,255,255,0.08)", color: resendStatus === "sent" ? "#34c759" : "rgba(255,255,255,0.7)" }}
-          >
-            {resendStatus === "sending" ? "Sending…" : resendStatus === "sent" ? "Email sent!" : "Resend verification email"}
-          </button>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.3)" }}>
-            Already verified?{" "}
-            <Link to="/login" style={{ color: "rgba(255,255,255,0.65)" }}>Sign in</Link>
-          </p>
-        </motion.div>
-      </div>
-    );
   }
 
   return (
