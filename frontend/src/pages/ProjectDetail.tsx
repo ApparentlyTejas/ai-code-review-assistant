@@ -21,7 +21,7 @@ export function ProjectDetail() {
   const { toast } = useToast();
   const [confirmPr, setConfirmPr] = useState<{ number: number; title: string } | null>(null);
 
-  const { data: pulls, isLoading } = useQuery({
+  const { data: pulls, isLoading, isError } = useQuery({
     queryKey: ["pulls", id],
     queryFn: () => listPullRequests(id),
   });
@@ -62,6 +62,12 @@ export function ProjectDetail() {
       </header>
 
       {isLoading && <Spinner label="Loading pull requests..." />}
+      {isError && (
+        <div className="empty-state-box">
+          <p>Could not load pull requests. Your GitHub PAT may have expired, or the repository is inaccessible.</p>
+          <p>Try deleting and re-adding this project with a fresh PAT.</p>
+        </div>
+      )}
       {reviewMutation.isPending && (
         <Spinner label="Running AI review — this can take up to 20 seconds..." />
       )}

@@ -6,7 +6,9 @@ from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base, get_db
 from app.core.limiter import limiter
+from app.core.security import hash_password
 from app.main import app
+from app.models.user import User as UserModel
 
 limiter.enabled = False
 
@@ -16,6 +18,24 @@ engine = create_engine(
     poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def create_verified_user(email: str, password: str = "password123") -> None:
+    """Insert a pre-verified user directly into the test DB."""
+    db = TestingSessionLocal()
+    try:
+        user = UserModel(email=email, hashed_password=hash_password(password), is_verified=True)
+        db.add(user)
+        db.commit()
+    finally:
+        db.close()
+
+
+def register_and_login(client: TestClient, email: str, password: str = "password123") -> dict:
+    """Create a verified user and return Bearer auth headers."""
+    create_verified_user(email, password)
+    resp = client.post("/auth/login", json={"email": email, "password": password})
+    return {"Authorization": f"Bearer {resp.json()['access_token']}"}
 
 
 def _override_get_db():

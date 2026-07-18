@@ -1204,6 +1204,45 @@ pre {
   margin-bottom: 16px;
 }
 
+/* ---------- Auth divider + Google button ---------- */
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.google-btn:hover:not(:disabled) {
+  background: var(--bg-subtle);
+  border-color: var(--text-secondary);
+}
+
 /* ---------- Re-review confirmation ---------- */
 
 .rerun-confirm {

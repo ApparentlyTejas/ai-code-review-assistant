@@ -1,11 +1,6 @@
 from unittest.mock import patch
 
-
-def _register_and_login(client, email):
-    client.post("/auth/register", json={"email": email, "password": "password123"})
-    response = client.post("/auth/login", json={"email": email, "password": "password123"})
-    token = response.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+from tests.conftest import register_and_login as _register_and_login
 
 
 @patch("app.routers.projects.github_service.validate_repo_access")

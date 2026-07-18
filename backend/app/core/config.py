@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     cookie_secure: bool = False  # Set to True in production (HTTPS only)
 
+    google_client_id: str = ""
+    resend_api_key: str = ""
+    resend_from_email: str = "ReviewLenzAI <onboarding@resend.dev>"
+    app_url: str = "http://localhost:5173"
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

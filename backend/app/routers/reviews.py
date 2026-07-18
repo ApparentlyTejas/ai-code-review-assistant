@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.limiter import limiter
 from app.models.finding import Finding as FindingModel
@@ -11,6 +12,7 @@ from app.routers.deps import get_current_user
 from app.schemas.review import ReviewCreate, ReviewOut, ReviewSummaryOut
 from app.services import github_service
 from app.services.crypto_service import decrypt_pat
+from app.services.email_service import send_review_ready_email
 from app.services.llm_service import MODEL_NAME, LLMReviewError, review_diff
 
 router = APIRouter(prefix="/projects/{project_id}/reviews", tags=["reviews"])
@@ -81,6 +83,20 @@ def trigger_review(
         )
     db.commit()
     db.refresh(review)
+
+    try:
+        review_url = f"{settings.app_url}/projects/{project.id}/reviews/{review.id}"
+        send_review_ready_email(
+            to=current_user.email,
+            pr_title=review.pr_title,
+            pr_number=review.pr_number,
+            repo=f"{project.repo_owner}/{project.repo_name}",
+            finding_count=len(review.findings),
+            review_url=review_url,
+        )
+    except Exception:
+        pass
+
     return review
 
 

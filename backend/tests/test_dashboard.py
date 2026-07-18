@@ -2,13 +2,7 @@ from unittest.mock import patch
 
 from app.models.finding import Finding, FindingCategory, FindingSeverity
 from app.models.review import Review, ReviewStatus
-
-
-def _register_and_login(client, email):
-    client.post("/auth/register", json={"email": email, "password": "password123"})
-    response = client.post("/auth/login", json={"email": email, "password": "password123"})
-    token = response.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+from tests.conftest import register_and_login as _register_and_login
 
 
 def test_summary_with_no_projects_returns_zeros(client):

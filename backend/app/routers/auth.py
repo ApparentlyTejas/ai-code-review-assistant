@@ -1,4 +1,8 @@
+import secrets
+
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+import httpx
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -7,7 +11,8 @@ from app.core.limiter import limiter
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
 from app.routers.deps import get_current_user
-from app.schemas.auth import TokenResponse, UserLogin, UserOut, UserRegister
+from app.schemas.auth import RegisterResponse, TokenResponse, UserLogin, UserOut, UserRegister
+from app.services.email_service import send_verification_email, send_welcome_email
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -19,18 +24,60 @@ _COOKIE_KWARGS = dict(
 )
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def _set_auth_cookies(response: Response, token: str) -> None:
+    max_age = settings.jwt_expire_minutes * 60
+    response.set_cookie(key="access_token", value=token, max_age=max_age, **_COOKIE_KWARGS)
+    response.set_cookie(
+        key="auth_hint", value="1", max_age=max_age,
+        httponly=False, secure=settings.cookie_secure, samesite=_SAMESITE,
+    )
+
+
+@router.post("/register", response_model=RegisterResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/minute")
-def register(request: Request, payload: UserRegister, db: Session = Depends(get_db)) -> User:
+def register(request: Request, payload: UserRegister, db: Session = Depends(get_db)) -> RegisterResponse:
     existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An account with this email already exists.")
 
-    user = User(email=payload.email, hashed_password=hash_password(payload.password))
+    token = secrets.token_urlsafe(32)
+    user = User(
+        email=payload.email,
+        hashed_password=hash_password(payload.password),
+        is_verified=False,
+        verification_token=token,
+    )
     db.add(user)
     db.commit()
+
+    try:
+        send_verification_email(user.email, token)
+    except Exception:
+        pass
+
+    return RegisterResponse(message="Check your email for a verification link.")
+
+
+@router.get("/verify", response_model=TokenResponse)
+def verify_email(token: str, response: Response, db: Session = Depends(get_db)) -> TokenResponse:
+    user = db.query(User).filter(User.verification_token == token).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired verification link.")
+
+    user.is_verified = True
+    user.verification_token = None
+    db.commit()
     db.refresh(user)
-    return user
+
+    jwt = create_access_token(subject=str(user.id))
+    _set_auth_cookies(response, jwt)
+
+    try:
+        send_welcome_email(user.email)
+    except Exception:
+        pass
+
+    return TokenResponse(access_token=jwt)
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -39,13 +86,50 @@ def login(request: Request, response: Response, payload: UserLogin, db: Session 
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+    if not user.is_verified:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Please verify your email before logging in.")
 
     token = create_access_token(subject=str(user.id))
-    max_age = settings.jwt_expire_minutes * 60
-    response.set_cookie(key="access_token", value=token, max_age=max_age, **_COOKIE_KWARGS)
-    # Non-HttpOnly hint so the frontend can skip the /auth/me call when no session exists
-    response.set_cookie(key="auth_hint", value="1", max_age=max_age, httponly=False,
-                        secure=settings.cookie_secure, samesite=_SAMESITE)
+    _set_auth_cookies(response, token)
+    return TokenResponse(access_token=token)
+
+
+class GooglePayload(BaseModel):
+    access_token: str
+
+
+@router.post("/google", response_model=TokenResponse)
+@limiter.limit("10/minute")
+def google_login(request: Request, response: Response, payload: GooglePayload, db: Session = Depends(get_db)) -> TokenResponse:
+    # Verify access token by fetching user info from Google
+    r = httpx.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        headers={"Authorization": f"Bearer {payload.access_token}"},
+        timeout=10,
+    )
+    if r.status_code != 200:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Google token")
+
+    id_info = r.json()
+    email: str = id_info.get("email", "")
+    user = db.query(User).filter(User.email == email).first()
+    is_new = user is None
+
+    if is_new:
+        user = User(email=email, hashed_password="", is_verified=True)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token(subject=str(user.id))
+    _set_auth_cookies(response, token)
+
+    if is_new:
+        try:
+            send_welcome_email(email)
+        except Exception:
+            pass
+
     return TokenResponse(access_token=token)
 
 
