@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import { useAuth } from "../auth/AuthContext";
 import { GoogleLoginButton } from "../components/GoogleLoginButton";
+import { GitHubLoginButton } from "../components/GitHubLoginButton";
 import { Logo } from "../components/Logo";
 
 const checks = [
@@ -88,6 +89,7 @@ export function Register() {
           onError={() => setError("Google sign-in failed. Please try again.")}
           disabled={isSubmitting}
         />
+        <GitHubLoginButton disabled={isSubmitting} />
 
         <div className="auth-divider"><span>or</span></div>
 

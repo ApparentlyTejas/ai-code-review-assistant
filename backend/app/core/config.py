@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     cookie_secure: bool = False  # Set to True in production (HTTPS only)
 
     google_client_id: str = ""
+    github_client_id: str = ""
+    github_client_secret: str = ""
     brevo_api_key: str = ""
     brevo_from_email: str = "reviewlenzai@gmail.com"
     app_url: str = "http://localhost:5173"

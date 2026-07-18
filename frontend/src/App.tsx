@@ -9,6 +9,7 @@ import { Register } from "./pages/Register";
 import { ReviewDetail } from "./pages/ReviewDetail";
 import { ReviewHistory } from "./pages/ReviewHistory";
 import { VerifyEmail } from "./pages/VerifyEmail";
+import { GitHubCallback } from "./pages/GitHubCallback";
 
 export default function App() {
   const location = useLocation();
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/auth/github/callback" element={<GitHubCallback />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/projects" element={<ProjectList />} />
           <Route path="/projects/:projectId" element={<ProjectDetail />} />

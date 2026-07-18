@@ -25,6 +25,10 @@ export async function loginWithGoogle(accessToken: string): Promise<void> {
   await apiClient.post("/auth/google", { access_token: accessToken });
 }
 
+export async function loginWithGitHub(code: string): Promise<void> {
+  await apiClient.post("/auth/github", { code });
+}
+
 export async function getCurrentUser(): Promise<User> {
   const { data } = await apiClient.get<User>("/auth/me");
   return data;

@@ -146,6 +146,72 @@ def google_login(request: Request, response: Response, payload: GooglePayload, d
     return TokenResponse(access_token=token)
 
 
+class GitHubPayload(BaseModel):
+    code: str
+
+
+@router.post("/github", response_model=TokenResponse)
+@limiter.limit("10/minute")
+def github_login(request: Request, response: Response, payload: GitHubPayload, db: Session = Depends(get_db)) -> TokenResponse:
+    if not settings.github_client_id or not settings.github_client_secret:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="GitHub login is not configured.")
+
+    token_r = httpx.post(
+        "https://github.com/login/oauth/access_token",
+        headers={"Accept": "application/json"},
+        json={"client_id": settings.github_client_id, "client_secret": settings.github_client_secret, "code": payload.code},
+        timeout=10,
+    )
+    access_token = token_r.json().get("access_token") if token_r.status_code == 200 else None
+    if not access_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid GitHub code.")
+
+    user_r = httpx.get(
+        "https://api.github.com/user",
+        headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
+        timeout=10,
+    )
+    if user_r.status_code != 200:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Failed to get GitHub user info.")
+
+    github_user = user_r.json()
+    email: str | None = github_user.get("email")
+
+    if not email:
+        emails_r = httpx.get(
+            "https://api.github.com/user/emails",
+            headers={"Authorization": f"Bearer {access_token}", "Accept": "application/json"},
+            timeout=10,
+        )
+        if emails_r.status_code == 200:
+            primary = next((e for e in emails_r.json() if e.get("primary") and e.get("verified")), None)
+            if primary:
+                email = primary["email"]
+
+    if not email:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No verified email found on GitHub account.")
+
+    user = db.query(User).filter(User.email == email).first()
+    is_new = user is None
+
+    if is_new:
+        user = User(email=email, hashed_password="", is_verified=True)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token(subject=str(user.id))
+    _set_auth_cookies(response, token)
+
+    if is_new:
+        try:
+            send_welcome_email(email)
+        except Exception:
+            pass
+
+    return TokenResponse(access_token=token)
+
+
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(response: Response) -> None:
     response.delete_cookie(key="access_token", **_COOKIE_KWARGS)

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { getCurrentUser, loginUser, loginWithGoogle, logoutUser } from "../api/auth";
+import { getCurrentUser, loginUser, loginWithGitHub, loginWithGoogle, logoutUser } from "../api/auth";
 import type { User } from "../types";
 
 interface AuthContextValue {
@@ -7,6 +7,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginGoogle: (accessToken: string) => Promise<void>;
+  loginGitHub: (code: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -48,13 +49,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(currentUser);
   }
 
+  async function loginGitHub(code: string) {
+    await loginWithGitHub(code);
+    sessionStorage.setItem("auth_active", "1");
+    const currentUser = await getCurrentUser();
+    setUser(currentUser);
+  }
+
   function logout() {
     sessionStorage.removeItem("auth_active");
     logoutUser().catch(() => {});
     setUser(null);
   }
 
-  return <AuthContext.Provider value={{ user, isLoading, login, loginGoogle, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, isLoading, login, loginGoogle, loginGitHub, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {
