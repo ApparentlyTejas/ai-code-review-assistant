@@ -7,11 +7,12 @@ import { Logo } from "../components/Logo";
 import { useAuth } from "../auth/AuthContext";
 
 const STACK = [
-  { key: "backend", val: "Python 3.12 · FastAPI · SQLAlchemy · Alembic · Pydantic v2" },
-  { key: "auth", val: "JWT · bcrypt · Fernet symmetric encryption" },
+  { key: "backend", val: "Python 3.12 · FastAPI · SQLAlchemy · Pydantic v2" },
+  { key: "auth", val: "GitHub OAuth · Google OAuth · JWT · bcrypt · Fernet encryption" },
   { key: "database", val: "PostgreSQL (Neon on prod)" },
   { key: "llm", val: "Groq API · Llama 3.3 70B · enforced output format" },
   { key: "frontend", val: "React 19 · TypeScript · Vite · TanStack Query · Framer Motion" },
+  { key: "email", val: "Brevo transactional email" },
   { key: "deploy", val: "Render · Neon · Vercel · GitHub Actions CI" },
 ];
 
@@ -31,8 +32,8 @@ export function Landing() {
           ReviewLenzAI
         </span>
         <div className="landing-nav-center">
-          <a href="#connect">Setup</a>
-          <a href="#review">How it works</a>
+          <a href="#connect">How it works</a>
+          <a href="#review">Review</a>
           <a href="#stack">Stack</a>
         </div>
         <div className="landing-nav-links">
@@ -71,8 +72,9 @@ export function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Paste a GitHub token, pick an open PR, and in about 20 seconds you get a full breakdown:
-            what's broken, what's a security hole, and what's just sloppy. Ranked by how bad it actually is.
+            Sign in with GitHub or Google, browse your repos, pick an open PR — and in about 20 seconds
+            you get a full breakdown: what's broken, what's a security hole, and what's just sloppy.
+            Ranked by how bad it actually is.
           </motion.p>
           <motion.div
             className="hero-actions"
@@ -103,13 +105,13 @@ export function Landing() {
       <section className="section" id="connect">
         <ScrollReveal>
           <h2>
-            No OAuth dance.
+            Connect GitHub.
             <br />
-            Just paste a token.
+            Pick a PR. Done.
           </h2>
           <p className="lead">
-            A GitHub personal access token and a repo name is all it takes. Access is confirmed live
-            through the GitHub API before anything gets stored.
+            Sign in with GitHub or Google. Browse your repos directly from the dashboard — no token
+            pasting, no manual setup. Just pick a repo and an open PR.
           </p>
         </ScrollReveal>
         <div className="feature-grid">
@@ -118,10 +120,9 @@ export function Landing() {
               <span className="feature-icon">
                 <ConnectIcon />
               </span>
-              <h3>Under a minute to get going</h3>
+              <h3>GitHub & Google login</h3>
               <p>
-                Repo name plus a PAT. No redirect flows, no permission wizard, no waiting for someone to
-                approve a scope.
+                Sign in with your GitHub or Google account in one click. Your repos are instantly available — no personal access tokens needed.
               </p>
             </div>
           </ScrollReveal>
@@ -130,10 +131,9 @@ export function Landing() {
               <span className="feature-icon">
                 <LockIcon />
               </span>
-              <h3>Your token stays yours</h3>
+              <h3>Secure by design</h3>
               <p>
-                Encrypted with Fernet before it touches the database. The API never returns it. Not even
-                in responses you'd expect it in.
+                All tokens encrypted with Fernet before touching the database. HttpOnly cookies, bcrypt passwords, and rate limiting on every endpoint.
               </p>
             </div>
           </ScrollReveal>
@@ -144,8 +144,7 @@ export function Landing() {
               </span>
               <h3>Private by default</h3>
               <p>
-                Your projects only appear on your account. There's no shared access, no team view, no
-                accidental leaks.
+                Your projects and reviews only appear on your account. No shared access, no team view, no accidental leaks.
               </p>
             </div>
           </ScrollReveal>
