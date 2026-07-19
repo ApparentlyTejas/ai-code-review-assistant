@@ -68,3 +68,4 @@ def test_me_with_valid_token_returns_user(client):
 def test_verify_email_invalid_token(client):
     response = client.get("/auth/verify?token=invalidtoken")
     assert response.status_code == 400
+
