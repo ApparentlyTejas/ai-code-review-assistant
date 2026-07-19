@@ -72,7 +72,7 @@ export function Landing() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Sign in with GitHub or Google, browse your repos, pick an open PR — and in about 20 seconds
+            Sign in with GitHub or Google, browse your repos, pick an open PR, and in about 20 seconds
             you get a full breakdown: what's broken, what's a security hole, and what's just sloppy.
             Ranked by how bad it actually is.
           </motion.p>
@@ -110,7 +110,7 @@ export function Landing() {
             Pick a PR. Done.
           </h2>
           <p className="lead">
-            Sign in with GitHub or Google. Browse your repos directly from the dashboard — no token
+            Sign in with GitHub or Google. Browse your repos directly from the dashboard, no token
             pasting, no manual setup. Just pick a repo and an open PR.
           </p>
         </ScrollReveal>
